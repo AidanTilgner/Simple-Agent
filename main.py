@@ -1,87 +1,76 @@
-import os
-from typing import List
-from openai import OpenAI
-from openai.types.chat import (
-    ChatCompletionMessageParam,
-)
+import threading
+import time
 
-# client = OpenAI(
-#     api_key=os.environ.get["OPENAI_API_KEY"],
-# )
+from agent.agent import Agent
+from llms.openai import OpenAILLM
+from tools.toolbox import Toolbox
+from utils.pubsub import PubSub
 
-messages: List[ChatCompletionMessageParam] = []
+LLM_CHOICE = "openai"
+LLM_CHOICE_MAP = {
+    "openai": OpenAILLM,
+}
 
-
-# Perception Stage
-def percieve():
-    return "perception"
-
-
-def remember():
-    return "memory"
+LLM = LLM_CHOICE_MAP[LLM_CHOICE]
+PUBSUB = PubSub()
+TOOLBOX = Toolbox(PUBSUB)
 
 
-def form_goal():
-    return "agency"
+def handle_errors():
+    PUBSUB.subscribe("error", lambda error: print(f"Error: {error}"))
+    PUBSUB.subscribe("agent_error", lambda error: print(f"Agent Error: {error}"))
 
 
-def build_prompt():
-    perception = percieve()
-    memory = remember()
-    agency = form_goal()
-
-    prompt = f"""
-    Perception: {perception}
-    Memory: {memory}
-    Agency: {agency}
-    """
-
-    return prompt
+def write_to_agent_log_file(log: str):
+    with open("agent.log", "a") as f:
+        current_timestring = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        f.write(f"{current_timestring}: {log}\n")
 
 
-# Reasoning Stage
-def agent_reason():
-    return "reasoning"
+def write_to_agent_thread_file(log: str):
+    with open(".agent_thread", "a") as f:
+        current_timestring = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        f.write(f"{current_timestring}: {log}\n")
 
 
-# Action Stage
-def act():
-    return "action outcome"
+def handle_logs():
+    PUBSUB.subscribe("log", lambda log: print(f"Log: {log}"))
+    PUBSUB.subscribe("agent_log", lambda log: print(f"Agent Log: {log}"))
 
 
-# LLM Utils
-def add_prompt_to_messages(prompt: str):
-    messages.append(
-        {
-            "content": prompt,
-            "role": "user",
-        }
-    )
-
-
-def add_response_to_messages(response: str):
-    messages.append(
-        {
-            "content": response,
-            "role": "assistant",
-        }
-    )
-
-
-def agent_loop():
-    pass
-
-
-# TUI
 def start_chat():
+    def on_new_agent_message(message: str):
+        print(f"Chatbot: {message}")
+        write_to_agent_thread_file(f"Agent: {message}")
+
+    PUBSUB.subscribe("new_agent_message", on_new_agent_message)
+
     while True:
         user_input = input("You: ")
         if user_input.lower() == "exit":
             print("Chatbot: Goodbye!")
             break
-        response = "Testing..."
-        print(f"Chatbot: {response}")
+        PUBSUB.publish("new_user_message", user_input)
+        write_to_agent_thread_file(f"User: {user_input}")
 
 
 if __name__ == "__main__":
+    print("""
+Hello and welcome to Simple Agent!
+    """)
+    handle_errors()
+    handle_logs()
+
+    print("Initializing agent...")
+    agent = Agent(PUBSUB, LLM, TOOLBOX)
+    print("Running agent...")
+    agent.start()
+
+    chat_thread = threading.Thread(target=start_chat)
+    chat_thread.start()
+
+    chat_thread.join()
+    agent.stop()
+
     start_chat()
+    print("Shutting down...")
