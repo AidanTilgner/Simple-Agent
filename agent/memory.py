@@ -11,10 +11,10 @@ class Memory:
         """
         This is where the memory of the agent will be queried.
         """
-        return "Blank Memory"
+        return "Memory is empty."
 
     def add_to_memory(self, label: str, context: str):
         """
         This is where the memory of the agent will be updated.
         """
-        return "Memory Updated"
+        return "Memory Updated."

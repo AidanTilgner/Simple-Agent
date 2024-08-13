@@ -1,14 +1,14 @@
 from typing import Any
 
 from tools.index import Tool
-
 from utils.pubsub import PubSub
 
 
 def run(ps: PubSub, args: Any):
     if not args:
         return "Error running send_message_to_user: No message provided."
-    ps.publish("new_agent_message", args.content)
+    print("Sending message to user:", args, args["content"], type(args))
+    ps.publish("new_agent_message", args["content"])
     return "Message sent to user."
 
 

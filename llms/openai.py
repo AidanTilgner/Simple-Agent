@@ -3,7 +3,7 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import NOT_GIVEN, OpenAI
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
@@ -35,7 +35,7 @@ def tool_to_openai_tool_call(tool: Tool) -> ChatCompletionToolParam:
 
 def openai_tool_call_to_tool_call(tool_call: ChatCompletionMessageToolCall) -> ToolCall:
     parsed_arguments = json.loads(tool_call.function.arguments)
-    return ToolCall(name=tool_call.id, arguments=parsed_arguments)
+    return ToolCall(name=tool_call.function.name, arguments=parsed_arguments)
 
 
 def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
@@ -60,10 +60,11 @@ def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
 
 
 def get_openai_model_response(messages: List[Message], tools: List[Tool]):
+    tool_list = [tool_to_openai_tool_call(tool) for tool in tools]
     response = client.chat.completions.create(
         model="gpt-4-turbo",
         messages=[message_to_openai_message(message) for message in messages],
-        tools=[tool_to_openai_tool_call(tool) for tool in tools],
+        tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
     )
 
     message = response.choices[0].message

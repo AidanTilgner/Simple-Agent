@@ -2,3 +2,4 @@ venv/
 .env
 __pycache__/
 .agent_thread
+agent.log
