@@ -9,8 +9,13 @@ from openai.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
     ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
     ChatCompletionToolParam,
     ChatCompletionUserMessageParam,
+)
+from openai.types.chat.chat_completion_message_tool_call_param import (
+    ChatCompletionMessageToolCallParam,
+    Function,
 )
 from openai.types.shared_params import FunctionDefinition
 
@@ -35,12 +40,38 @@ def tool_to_openai_tool_call(tool: Tool) -> ChatCompletionToolParam:
 
 def openai_tool_call_to_tool_call(tool_call: ChatCompletionMessageToolCall) -> ToolCall:
     parsed_arguments = json.loads(tool_call.function.arguments)
-    return ToolCall(name=tool_call.function.name, arguments=parsed_arguments)
+    return ToolCall(
+        name=tool_call.function.name, arguments=parsed_arguments, id=tool_call.id
+    )
+
+
+def tool_call_to_openai_tool_call(
+    tool_call: ToolCall,
+) -> ChatCompletionMessageToolCallParam:
+    return ChatCompletionMessageToolCallParam(
+        id=tool_call.id,
+        function=Function(
+            name=tool_call.name, arguments=json.dumps(tool_call.arguments)
+        ),
+        type="function",
+    )
 
 
 def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
     if not message.content:
-        raise ValueError("Message content cannot be None")
+        return ChatCompletionAssistantMessageParam(
+            content="",
+            role="assistant",
+            tool_calls=[tool_call_to_openai_tool_call(tc) for tc in message.tool_calls]
+            if message.tool_calls
+            else [],
+        )
+    if message.role == "tool" and message.tool_call_id is not None:
+        return ChatCompletionToolMessageParam(
+            content=message.content,
+            role="tool",
+            tool_call_id=message.tool_call_id,
+        )
     if message.role == "user":
         return ChatCompletionUserMessageParam(
             content=message.content,
@@ -59,10 +90,10 @@ def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
     raise ValueError(f"Invalid message role: {message.role}")
 
 
-def get_openai_model_response(messages: List[Message], tools: List[Tool]):
+def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Message:
     tool_list = [tool_to_openai_tool_call(tool) for tool in tools]
     response = client.chat.completions.create(
-        model="gpt-4-turbo",
+        model="gpt-4o-mini",
         messages=[message_to_openai_message(message) for message in messages],
         tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
     )
@@ -74,12 +105,14 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]):
             content=message.content,
             role=message.role,
             tool_calls=None,
+            tool_call_id=None,
         )
 
     return Message(
         content=None,
         role=message.role,
         tool_calls=[openai_tool_call_to_tool_call(tc) for tc in message.tool_calls],
+        tool_call_id=None,
     )
 
 

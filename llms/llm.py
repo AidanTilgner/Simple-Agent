@@ -9,6 +9,7 @@ class Message:
     content: Optional[str]
     role: str
     tool_calls: Optional[List[ToolCall]]
+    tool_call_id: Optional[str] = None
 
 
 class LLM:

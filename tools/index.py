@@ -16,5 +16,6 @@ class Tool:
 
 @dataclass
 class ToolCall:
+    id: str
     name: str
     arguments: Dict[str, Any]

@@ -23,7 +23,8 @@ class Agent:
 
             You should treat interaction with the user as an iterative process, so don't be afraid to gain clarification through sending the user a message and prompting them.
             """,
-            tool_calls=None
+            tool_calls=None,
+            tool_call_id=None,
         )
     ]
     llm: LLM
@@ -95,8 +96,11 @@ class Agent:
         response_message = self.llm.get_response(
             self.messages, self.toolbox.get_tools_listed()
         )
+
+        self.messages.append(response_message)
+
         if self.verbose:
-            print("\nResponse message:", (response_message), "\n")
+            self.log(f"Response message: {response_message}\n")
         self.act(response_message)
 
     def act(self, message: Message):
@@ -117,6 +121,14 @@ class Agent:
                 )
             returned_message = self.toolbox.run_tool(
                 tool_call.name, tool_call.arguments
+            )
+            self.messages.append(
+                Message(
+                    content=returned_message,
+                    role="tool",
+                    tool_call_id=tool_call.id,
+                    tool_calls=None,
+                )
             )
             self.log(returned_message)
 
