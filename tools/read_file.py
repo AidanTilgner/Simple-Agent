@@ -7,22 +7,24 @@ from utils.pubsub import PubSub
 def run(ps: PubSub, args: Any):
     if not args:
         return "Error running send_message_to_user: No message provided."
-    ps.publish("new_agent_message", args.get("content"))
-    return "Message sent to user."
+    with open(args["file_path"], "r") as file:
+        content = file.read()
+        return content
+    return "File not read."
 
 
-send_message_to_user = Tool(
-    name="send_message_to_user",
-    description="Send a message to the user",
+read_file = Tool(
+    name="read_file",
+    description="Read a file",
     function=run,
     parameters={
         "type": "object",
         "properties": {
-            "content": {
+            "file_path": {
                 "type": "string",
-                "description": "The contents of the message.",
+                "description": "The path to the file to read.",
             },
         },
-        "required": ["content"],
+        "required": ["file_path"],
     },
 )

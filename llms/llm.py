@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Callable, List, Optional
 
 from tools.index import Tool, ToolCall
@@ -10,6 +10,9 @@ class Message:
     role: str
     tool_calls: Optional[List[ToolCall]]
     tool_call_id: Optional[str] = None
+
+    def to_json(self):
+        return asdict(self)
 
 
 class LLM:

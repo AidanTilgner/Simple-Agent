@@ -1,0 +1,3 @@
+- [ ] Figure out a way for the agent to continually use tools until prompting is necessary, so basically update the 'should_iterate'
+- [ ] Add read_file tool
+- [ ] Add write_file tool

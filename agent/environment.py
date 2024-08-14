@@ -29,8 +29,11 @@ class Environment:
 
         return f"""
         Unseen Messages:
-        {[message for message in unseen_messages]}\n
+        {"".join(["- {}".format(message) for message in unseen_messages])}
         """
 
-    def new_perception(self):
-        return len(self.unseen_messages) > 0
+    def perception_is_empty(self):
+        return len(self.unseen_messages) == 0
+
+    def get_unseen_messages(self):
+        return self.unseen_messages

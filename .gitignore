@@ -3,3 +3,5 @@ venv/
 __pycache__/
 agent.thread
 agent.log
+.zed
+pyrightconfig.json

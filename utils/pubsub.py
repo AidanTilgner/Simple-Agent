@@ -9,7 +9,7 @@ class PubSub:
         # Lock to ensure thread-safe operations
         self.lock = threading.Lock()
 
-    def subscribe(self, event_type: str, handler: Callable[[Any], None]) -> None:
+    def subscribe(self, event_type: str, handler: Callable[[Any], Any]) -> None:
         """Adds a subscriber (handler) to an event type."""
         with self.lock:
             if event_type not in self.subscribers:

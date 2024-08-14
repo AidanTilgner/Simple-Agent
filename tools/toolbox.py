@@ -1,25 +1,21 @@
-import json
 from typing import Any, Dict, List, Optional
 
 from tools.index import Tool
+from tools.read_file import read_file
 from tools.send_message_to_user import send_message_to_user
+from tools.write_file import write_file
 from utils.pubsub import PubSub
 
-
-def get_tools() -> Dict[str, Tool]:
-    """
-    This is where the tools available to the agent will be queried.
-    """
-    tools = {
-        "send_message_to_user": send_message_to_user,
-    }
-
-    return tools
+DEFAULT_TOOLS = {
+    "send_message_to_user": send_message_to_user,
+    "read_file": read_file,
+    "write_file": write_file,
+}
 
 
 class Toolbox:
     pubsub: Optional[PubSub] = None
-    tools: Dict[str, Tool] = get_tools()
+    tools: Dict[str, Tool] = DEFAULT_TOOLS
 
     def __init__(self, ps: PubSub) -> None:
         self.pubsub = ps
@@ -38,3 +34,6 @@ class Toolbox:
             self.pubsub.publish("toolbox_error", f"Tool '{tool_name}' not found.")
             return "Tool not found."
         return tool.function(self.pubsub, arguments)
+
+    def register_tool(self, Tool):
+        self.tools[Tool.name] = Tool
