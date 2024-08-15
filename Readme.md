@@ -1,5 +1,7 @@
 # Simple Agent
 
+**Simple Agent is still a work in progress! There will likely be bugs and missing features, if you encounter them, please leave an issue!**
+
 ![simple-agent-run](https://github.com/user-attachments/assets/617e9dab-44e9-4c07-ba67-88fb9a79bb37)
 
 ^^ I'll try to have a better demo in the future but this is it working. The file was successfully created here, just FYI.
