@@ -1,5 +1,9 @@
 # Simple Agent
 
+![simple-agent-run](https://github.com/user-attachments/assets/617e9dab-44e9-4c07-ba67-88fb9a79bb37)
+
+^^ I'll try to have a better demo in the future but this is it working. The file was successfully created here, just FYI.
+
 This is an attempt to make a bare-bones, very simple agent based on LLMs and other technologies. The goal is to have a simple agent for use in various purposes:
 
 1. Experimentation and benchmarking
