@@ -7,14 +7,17 @@ from utils.pubsub import PubSub
 def run(ps: PubSub, args: Any):
     if not args:
         return "Error running send_message_to_user: No message provided."
-    contents = args.get("contents")
-    with open(args["file_path"], "w") as file:
-        file.write(contents)
-    with open(args["file_path"], "r") as file:
-        content = file.read()
-        return f"New file content: \n{content}"
+    try:
+        contents = args.get("content")
+        with open(args["file_path"], "w") as file:
+            file.write(contents)
+        with open(args["file_path"], "r") as file:
+            content = file.read()
+            return f"New file content: \n{content}"
 
-    return "File not read."
+        return "File not read."
+    except Exception as e:
+        return f"Error writing to file: {e}"
 
 
 write_file = Tool(

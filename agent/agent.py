@@ -23,12 +23,11 @@ class Agent:
             content="""
             You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
 
-            When the user sends a message, you will see them in your environment. You can then select a choice of actions to take based on the message.
-            You have tools at your disposal and **you should use them**.
+            You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
 
-            You should treat interaction with the user as an iterative process, so don't be afraid to gain clarification through sending the user a message and prompting them.
+            If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
 
-            Use the 'create_task' and 'complete_task' tools to manage tasks.
+            When you have open tasks, you should focus on completing them.
             """,
             tool_calls=None,
             tool_call_id=None,
@@ -40,6 +39,7 @@ class Agent:
     memory: Memory
     agency: Agency
     running: bool = False
+    awake: bool = False
     thread: threading.Thread
     verbose: bool
     iteration: int = 0
@@ -79,7 +79,7 @@ class Agent:
 
     def run(self):
         while self.running:
-            if self.should_iterate():
+            if self.check_waking_state():
                 self.log_messages()
                 self.iteration += 1
                 if self.verbose:
@@ -87,23 +87,16 @@ class Agent:
                 self.reason()
             time.sleep(1)
 
-    def should_iterate(self):
-        if len(self.environment.get_unseen_messages()):
-            if self.verbose:
-                self.log("Creating messages task.")
-            self.agency.create_task(
-                description="Review new user messages",
-                requirements=[
-                    "Review new user messages.",
-                    "If need be, create a new task.",
-                ],
-                completed=False,
-            )
+    def check_waking_state(self):
+        if self.agency.has_incomplete_tasks():
+            self.awake = True
+        else:
+            self.awake = False
 
-        should = self.agency.has_incomplete_tasks()
-        if self.verbose:
-            self.log(f"Should iterate: {should}")
-        return should
+        if self.environment.new_stimuli():
+            self.awake = True
+
+        return self.awake
 
     def send_message(self, message: str):
         self.pubsub.publish("new_agent_message", message)
@@ -120,9 +113,10 @@ class Agent:
             )
         )
 
-        response_message = self.llm.get_response(
-            self.messages, self.toolbox.get_tools_listed()
-        )
+        with console.status("[bold blue]Simmy is thinking...", spinner="dots12"):
+            response_message = self.llm.get_response(
+                self.messages, self.toolbox.get_tools_listed()
+            )
 
         self.messages.append(response_message)
 
@@ -152,6 +146,7 @@ class Agent:
             returned_message = self.toolbox.run_tool(
                 tool_call.name, tool_call.arguments
             )
+            self.pubsub.publish("new_tool_message", returned_message)
             self.messages.append(
                 Message(
                     content=returned_message,

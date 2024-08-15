@@ -50,3 +50,18 @@ I think that we have two general options here:
 2. Two tools which are given to the normal reasoning engine, capable of creation or completion of tasks
 
 Of these, I'm inclined, for the sake of simplicity, to favor the second approach. If we can simply define two new tools which complete or create tasks, then that's all the management which I believe would be required. It may be worth creating a divergent branch in the future to test the first approach, however. I think that it might be a bit too convoluted to have it be a different system handling the task logic.
+
+Aidan: Handling control flow
+---
+
+I'm trying to figure out how to handle control flow of the agent loop. Everything centers around the idea of tasks. However at the same time, I want to think about the agent iterating vs not iterating as being the difference between being awake and going to sleep. Therefore, I'd need to come up with discrete criteria under which the sleep state would be achieved, or the awake state.
+
+**Awake**
+The agent should be awake if there is stimulus for it to respond to, or duties to fulfill. This essentially means that there may be unseen messages, or tasks to be completed. Even in the case where a message is sent, the agent should still continue fulfilling tasks until all tasks are considered complete. So the logical criteria are as follows:
+- Open tasks remain
+- New stimuli exists such as unseen messages
+
+**Asleep**
+On that note, however, the restful state must be reached at this point. The difficulty here will be in having the agent sleep, without compromising its ability to respond to stimulus. Let's just start by defining under which conditions sleep makes sense. If there are no open tasks, then there is no reason to go on trying to complete them. If there is no new stimuli, then there is no reason for the agent to attempt to respond. Therefore, if there are no incomplete tasks, and no new stimuli, then there shouldn't be any reason to sleep. The logic conditions are as follows:
+- There are no open tasks
+- There is no new stimuli

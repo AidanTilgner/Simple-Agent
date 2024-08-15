@@ -9,6 +9,7 @@ from utils.pubsub import PubSub
 
 console = Console()
 
+
 @dataclass
 class Task:
     id: str
@@ -55,26 +56,41 @@ class Agency:
     def get_incomplete_tasks_described(self):
         return self.get_tasks_described(self.get_incomplete_tasks())
 
-    def create_task(self, description: str, requirements: List[str], completed: bool):
-        id = self.get_new_task_id()
-        task = Task(
-            id=id,
-            description=description,
-            requirements=requirements,
-            completed=completed,
-        )
-        self.tasks.append(task)
-        console.print(f"Created task {id} with description: {description}", style="italic green")
-        self.pubsub.publish("task_created", task)
+    def create_task(
+        self, description: str, requirements: List[str], completed=False
+    ) -> bool:
+        try:
+            id = self.get_new_task_id()
+            task = Task(
+                id=id,
+                description=description,
+                requirements=requirements,
+                completed=completed,
+            )
+            self.tasks.append(task)
+            console.print(
+                f"Created task {id} with description: {description}",
+                style="italic green",
+            )
+            self.pubsub.publish("task_created", task)
+            return True
+        except Exception as e:
+            console.print(f"Error creating task: {e}", style="bold red")
+            return False
 
-    def complete_task(self, task_id: str):
-        task = next((t for t in self.tasks if t.id is task_id), None)
-        if not task:
-            self.pubsub.publish("error", f"Task not found for id: {task_id}")
-            return
-        task.completed = True
-        console.print(f"Completed task {task_id}", style="bold green")
-        self.pubsub.publish("task_completed", task)
+    def complete_task(self, task_id: str) -> bool:
+        try:
+            for task in self.tasks:
+                if task.id == task_id:
+                    task.completed = True
+                    self.pubsub.publish("task_completed", task)
+                    console.print(f"Completed task {task_id}", style="bold green")
+                    return True
+            console.print(f"Task {task_id} not found.", style="bold red")
+            return False
+        except Exception as e:
+            console.print(f"Error completing task: {e}", style="bold red")
+            return False
 
     def create_task_tool(self) -> Tool:
         def run(pubsub: PubSub, args: Any):
@@ -89,10 +105,10 @@ class Agency:
                 return "Error creating task: No requirements provided."
             if not isinstance(requirements, list):
                 return "Error creating task: Requirements must be a list."
-            if not completed:
-                return "Error creating task: No completion status provided."
 
-            self.create_task(description, requirements, completed)
+            worked = self.create_task(description, requirements, completed)
+            if not worked:
+                return "Error creating task."
             return f"Task created with id {id}."
 
         return Tool(
@@ -125,7 +141,9 @@ class Agency:
             task_id = args.get("task_id")
             if task_id is None:
                 return f"Task with id {task_id} not found."
-            self.complete_task(task_id)
+            worked = self.complete_task(task_id)
+            if not worked:
+                return f"Error completing task with id {task_id}."
             return f"Task with id {task_id} marked as complete."
 
         return Tool(

@@ -96,6 +96,8 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Mes
         model="gpt-4o-mini",
         messages=[message_to_openai_message(message) for message in messages],
         tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
+        parallel_tool_calls=True,
+        tool_choice="required",
     )
 
     message = response.choices[0].message
