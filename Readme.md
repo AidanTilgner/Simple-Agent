@@ -1,10 +1,13 @@
 # Simple Agent
-
-**Simple Agent is still a work in progress! There will likely be bugs and missing features, if you encounter them, please leave an issue!**
+> [!warning]
+> Simple agent can run commands on your machine. Be aware of the potential for it to make modifications to your system.
 
 ![simple-agent-run](https://github.com/user-attachments/assets/617e9dab-44e9-4c07-ba67-88fb9a79bb37)
 
 ^^ I'll try to have a better demo in the future but this is it working. The file was successfully created here, just FYI.
+
+> [!note]
+> Simple Agent is still a work in progress! There will likely be bugs and missing features, if you encounter them, please leave an issue!
 
 This is an attempt to make a bare-bones, very simple agent based on LLMs and other technologies. The goal is to have a simple agent for use in various purposes:
 
