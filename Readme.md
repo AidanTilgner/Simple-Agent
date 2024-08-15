@@ -27,7 +27,7 @@ The perception stage is characterized by a combination of 1. environmental analy
 
 ## How to use it
 
-This repository is a fairly straightforward Python project. **You will need to have Python installed**, and I used Python 3.10 on MacOS, so I know that this version worked. If you use a different version, or use a platform other than MacOS and notice bugs, please let me know in an issue. You should be able to clone the repository, install dependencies (in a virtual environment if you choose), fill in the `.env` file, and run `main.py` to see it work.
+This repository is a fairly straightforward Python project. **You will need to have Python installed**, and I used Python 3.10 on MacOS, so I know that this version worked. If you use a different version, or use a platform other than MacOS and notice bugs, please let me know in an issue. You should be able to clone the repository, install dependencies (in a virtual environment if you choose), fill in the `.env` file, and run `simple-agent.py` to see it work.
 
 1. Start by cloning the repository:
 
@@ -69,7 +69,7 @@ cp .env.example .env
 5. Run the program:
 
 ```bash
-python main.py
+python simple-agent.py
 ```
 
 6. To exit the program, you can use `Ctrl+C`, or type "exit".

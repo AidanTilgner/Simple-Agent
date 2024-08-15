@@ -17,12 +17,19 @@ class Message:
 
 class LLM:
     get_model_response: Callable[[List[Message], List[Tool]], Message]
+    on_startup: Optional[Callable[[], None]] = None
 
     def __init__(
         self,
         get_model_response: Callable[[List[Message], List[Tool]], Message],
+        on_startup: Optional[Callable[[], None]] = None,
     ):
         self.get_model_response = get_model_response
+        self.on_startup = on_startup
+
+    def startup(self):
+        if self.on_startup:
+            self.on_startup()
 
     def get_response(self, messages: List[Message], tools: List[Tool]) -> Message:
         return self.get_model_response(messages, tools)

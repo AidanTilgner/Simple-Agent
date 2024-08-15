@@ -20,13 +20,9 @@ class Agent:
     messages: List[Message] = [
         Message(
             role="system",
-            content="""
-            You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
-
+            content="""You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
             You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
-
             If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
-
             When you have open tasks, you should focus on completing them.
             """,
             tool_calls=None,
@@ -42,19 +38,26 @@ class Agent:
     awake: bool = False
     thread: threading.Thread
     verbose: bool
+    silence_actions: bool
     iteration: int = 0
 
     def __init__(
-        self, pubsub: PubSub, llm: LLM, toolbox: Toolbox, verbose: bool
+        self,
+        pubsub: PubSub,
+        llm: LLM,
+        toolbox: Toolbox,
+        verbose: bool,
+        silence_actions: bool,
     ) -> None:
         self.pubsub = pubsub
         self.llm = llm
         self.toolbox = toolbox
+        self.verbose = verbose
+        self.silence_actions = silence_actions
         self.environment = Environment(pubsub)
         self.memory = Memory(pubsub)
-        self.agency = Agency(pubsub, llm)
+        self.agency = Agency(pubsub, llm=llm, silence_actions=silence_actions)
         self.thread = threading.Thread(target=self.run)
-        self.verbose = verbose
 
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
@@ -138,10 +141,12 @@ class Agent:
         for tool_call in message.tool_calls:
             if self.verbose:
                 self.log(
-                    f"Running tool: {tool_call.name} with arguments: {tool_call.arguments}"
+                    f"Running {tool_call.name} with arguments: {tool_call.arguments}"
                 )
-            else:
-                console.print(f"Running tool: {tool_call.name}", style="bold blue")
+            if not self.silence_actions:
+                console.print(
+                    f"[bold]Running[/bold] {tool_call.name}", style="bright_black"
+                )
 
             returned_message = self.toolbox.run_tool(
                 tool_call.name, tool_call.arguments

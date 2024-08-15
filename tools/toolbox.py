@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from tools.edit_file import edit_file
+from tools.exec_command import exec_command
 from tools.index import Tool
 from tools.read_file import read_file
 from tools.send_message_to_user import send_message_to_user
@@ -10,6 +12,8 @@ DEFAULT_TOOLS = {
     "send_message_to_user": send_message_to_user,
     "read_file": read_file,
     "write_file": write_file,
+    "exec_command": exec_command,
+    "edit_file": edit_file,
 }
 
 

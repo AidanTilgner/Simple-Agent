@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 from openai import NOT_GIVEN, OpenAI
@@ -24,7 +24,8 @@ from tools.index import Tool, ToolCall
 
 load_dotenv()
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+openai_client: OpenAI
+openai_model: str = "gpt-4o-mini"
 
 
 def tool_to_openai_tool_call(tool: Tool) -> ChatCompletionToolParam:
@@ -91,9 +92,13 @@ def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
 
 
 def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Message:
+    if not openai_client:
+        raise ValueError("OpenAI client not initialized")
+
     tool_list = [tool_to_openai_tool_call(tool) for tool in tools]
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
+
+    response = openai_client.chat.completions.create(
+        model=openai_model,
         messages=[message_to_openai_message(message) for message in messages],
         tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
         parallel_tool_calls=True,
@@ -118,6 +123,19 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Mes
     )
 
 
+def init_openai_llm():
+    global openai_client
+    global openai_model
+
+    openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+    env_model = os.environ.get("OPENAI_MODEL")
+    if env_model != "" and env_model is not None:
+        openai_model = env_model
+    if not openai_model:
+        openai_model = "gpt-4o-mini"
+
+
 OpenAILLM = LLM(
-    get_model_response=get_openai_model_response,
+    get_model_response=get_openai_model_response, on_startup=init_openai_llm
 )

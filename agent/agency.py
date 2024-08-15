@@ -22,11 +22,13 @@ class Agency:
     pubsub: PubSub
     llm: LLM
     tasks: List[Task]
+    silence_actions: bool
 
-    def __init__(self, pubsub: PubSub, llm: LLM) -> None:
+    def __init__(self, pubsub: PubSub, llm: LLM, silence_actions: bool) -> None:
         self.pubsub = pubsub
         self.llm = llm
         self.tasks = []
+        self.silence_actions = silence_actions
 
     def get_new_task_id(self) -> str:
         return f"task_{len(self.tasks) + 1}"
@@ -68,10 +70,11 @@ class Agency:
                 completed=completed,
             )
             self.tasks.append(task)
-            console.print(
-                f"Created task {id} with description: {description}",
-                style="italic green",
-            )
+            if not self.silence_actions:
+                console.print(
+                    f"Created task: [italic]{description}[/italic]",
+                    style="green",
+                )
             self.pubsub.publish("task_created", task)
             return True
         except Exception as e:
@@ -84,7 +87,10 @@ class Agency:
                 if task.id == task_id:
                     task.completed = True
                     self.pubsub.publish("task_completed", task)
-                    console.print(f"Completed task {task_id}", style="bold green")
+                    if not self.silence_actions:
+                        console.print(
+                            f"Completed task: [italic]{task.description}[/italic]", style="green"
+                        )
                     return True
             console.print(f"Task {task_id} not found.", style="bold red")
             return False
