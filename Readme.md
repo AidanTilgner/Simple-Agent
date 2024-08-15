@@ -22,18 +22,16 @@ This repository is a fairly straightforward Python project. **You will need to h
 
 1. Start by cloning the repository:
 
-2. ```bash
+```bash
    git clone https://github.com/AidanTilgner/Simple-Agent.git
-   ```
-
 ````
 
-3. Then, navigate into the directory:
+2. Then, navigate into the directory:
 ```bash
 cd Simple-Agent
 ````
 
-4a. (Optional) If you choose to use a virtual environment, you can instantiate it like so:
+3a. (Optional) If you choose to use a virtual environment, you can instantiate it like so:
 
 ```bash
 python -m venv venv
@@ -45,13 +43,13 @@ Then, activate the virtual environment:
 source ./venv/bin/activate
 ```
 
-4b. Install the dependencies:
+3b. Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-5. Copy the `.env.example` file to `.env` and fill in the necessary information. You will need an OpenAI API key, which you can get from the [OpenAI website](https://platform.openai.com/api-keys).
+4. Copy the `.env.example` file to `.env` and fill in the necessary information. You will need an OpenAI API key, which you can get from the [OpenAI website](https://platform.openai.com/api-keys).
 
 (on MacOS or Linux):
 
@@ -59,13 +57,13 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-6. Run the program:
+5. Run the program:
 
 ```bash
 python main.py
 ```
 
-7. To exit the program, you can use `Ctrl+C`, or type "exit".
+6. To exit the program, you can use `Ctrl+C`, or type "exit".
 
 That's it! You should see the agent start up, and you can ask it to do things using it's tools.
 
