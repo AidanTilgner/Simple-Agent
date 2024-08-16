@@ -35,7 +35,12 @@ write_file = Tool(
                 "type": "string",
                 "description": "The content to write to the file.",
             },
+            "mode": {
+                "type": "string",
+                "enum": ["w", "a", "x"],
+                "description": "The mode to open the file in. Defaults to 'w'.",
+            },
         },
-        "required": ["file_path", "content"],
+        "required": ["file_path", "content", "mode"],
     },
 )

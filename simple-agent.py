@@ -55,6 +55,12 @@ def write_to_general_log_file(log: str):
         f.write(f"{current_timestring}: {log}\n")
 
 
+def write_to_toolbox_log_file(log: str):
+    with open("toolbox.log", "a") as f:
+        current_timestring = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        f.write(f"{current_timestring}: {log}\n")
+
+
 def write_to_agent_thread_file(log: str):
     with open("agent.thread", "a") as f:
         current_timestring = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -68,8 +74,12 @@ def handle_logs():
     def general_log(log: str):
         write_to_general_log_file(log)
 
+    def toolbox_log(log: str):
+        write_to_toolbox_log_file(log)
+
     PUBSUB.subscribe("agent_log", agent_log)
     PUBSUB.subscribe("general_log", general_log)
+    PUBSUB.subscribe("toolbox_log", toolbox_log)
 
 
 def prompt_user():

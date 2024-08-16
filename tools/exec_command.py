@@ -19,7 +19,7 @@ def run(ps: PubSub, args: Any):
             stderr=subprocess.PIPE,
             text=True,
         )
-        return result.stdout
+        return f"Command output:\n{result.stdout}"
     except subprocess.CalledProcessError as e:
         return f"Error executing command: {e.stderr}"
 

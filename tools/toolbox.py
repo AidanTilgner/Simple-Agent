@@ -30,6 +30,13 @@ class Toolbox:
     def get_tool(self, tool_name: str) -> Optional[Tool]:
         return self.tools.get(tool_name)
 
+    def tool_log(self, tool_name: str, message: str, arguments: Any = None):
+        if not self.pubsub:
+            raise Exception("No PubSub provided.")
+        self.pubsub.publish(
+            "toolbox_log", f"Ran {tool_name}({arguments}) and result {message}"
+        )
+
     def run_tool(self, tool_name: str, arguments: Any) -> str:
         if not self.pubsub:
             raise Exception("No PubSub provided.")
@@ -37,7 +44,9 @@ class Toolbox:
         if not tool:
             self.pubsub.publish("toolbox_error", f"Tool '{tool_name}' not found.")
             return "Tool not found."
-        return tool.function(self.pubsub, arguments)
+        message = tool.function(self.pubsub, arguments)
+        self.tool_log(tool_name, message, arguments)
+        return message
 
     def register_tool(self, Tool):
         self.tools[Tool.name] = Tool
