@@ -1,9 +1,9 @@
 # Simple Agent
+
 > [!warning]
 > Simple agent can run commands on your machine. Be aware of the potential for it to make modifications to your system.
 
 ![Aug-16-2024 11-27-09](https://github.com/user-attachments/assets/3bb43a56-0501-4759-b3b0-ac459f53f692)
-
 
 > [!note]
 > Simple Agent is still a work in progress! There will likely be bugs and missing features, if you encounter them, please leave an issue!
@@ -32,12 +32,13 @@ This repository is a fairly straightforward Python project. **You will need to h
 
 ```bash
    git clone https://github.com/AidanTilgner/Simple-Agent.git
-````
+```
 
 2. Then, navigate into the directory:
+
 ```bash
 cd Simple-Agent
-````
+```
 
 3a. (Optional) If you choose to use a virtual environment, you can instantiate it like so:
 
@@ -92,7 +93,8 @@ The `tools/` directory is where you'll find tools. Each tool must fit the `Tool`
 
 These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
 
-- [ ] Integrate further models or types of LLM
-- [ ] Implement memory and learning
+- [ ] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
 - [ ] Add more tools
 - [ ] Allow selection of additional models
+- [ ] Get better editing
+- [ ] A more robust benchmarking system

@@ -34,7 +34,7 @@ class Toolbox:
         if not self.pubsub:
             raise Exception("No PubSub provided.")
         self.pubsub.publish(
-            "toolbox_log", f"Ran {tool_name}({arguments}) and result {message}"
+            "toolbox_log", f'Ran {tool_name}({arguments}) and result "{message}"'
         )
 
     def run_tool(self, tool_name: str, arguments: Any) -> str:

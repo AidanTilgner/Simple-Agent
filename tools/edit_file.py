@@ -8,30 +8,28 @@ from utils.pubsub import PubSub
 def run(pubsub: PubSub, args: Any):
     try:
         file_path = args.get("file_path")
-        selection = args.get(
-            "selection", "1-"
-        )  # Default to replace entire file if selection is missing
-        content = args.get("content", "")  # Default to empty content
+        selection = args.get("selection", "1-")
+        content = args.get("content", "")
 
         # Read the file lines
         with open(file_path, "r") as f:
             lines = f.readlines()
 
-        # Parse selection
         start, end = parse_range(range=selection, length=len(lines))
 
         if start is None or end is None:
             return "Invalid selection range"
 
-        # Prepare the new content
-        to_insert = content.split("\n")
-        new_content = "\n".join(lines[: start - 1] + to_insert + lines[end:])
+        start -= 1
+        end = len(lines) if end is None else end
+        new_content = lines[:start] + [content] + lines[end:]
 
-        # Write the new content back to the file
+        new_content = "".join(new_content)
+
         with open(file_path, "w") as f:
             f.write(new_content)
 
-        return "File edited successfully"
+        return f"New file contents:\n```\n{add_line_numbers(new_content)}\n```"
     except Exception as e:
         # For better debugging, consider logging the exception with traceback
         import traceback
@@ -54,7 +52,7 @@ edit_file = Tool(
             "selection": {
                 "type": "string",
                 "pattern": "^d+-d+$",
-                "description": "The target line numbers to select, formatted (start-end), you may omit the end or start to select from the beginning or to the end.",
+                "description": "The inclusive target line numbers to select, formatted (start-end), you may omit the end or start to select from the beginning or to the end.",
             },
             "content": {
                 "type": "string",
@@ -64,3 +62,11 @@ edit_file = Tool(
         "required": ["file_path", "selection", "content"],
     },
 )
+
+
+def add_line_numbers(content: str) -> str:
+    lines = content.split("\n")
+    lines_with_numbers = []
+    for i, line in enumerate(lines):
+        lines_with_numbers.append(f"{i+1}: {line}")
+    return "\n".join(lines_with_numbers)
