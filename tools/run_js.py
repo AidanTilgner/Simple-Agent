@@ -30,7 +30,7 @@ def run(ps: PubSub, args: Any):
 
 run_js = Tool(
     name="run_js",
-    description="Run JavaScript code on a webpage",
+    description="Run JavaScript code on a webpage using Selenium WebDriver. Returns result of JS expression.",
     function=run,
     parameters={
         "type": "object",
@@ -41,7 +41,7 @@ run_js = Tool(
             },
             "script": {
                 "type": "string",
-                "description": "The JavaScript code to run on the webpage.",
+                "description": "The JavaScript code to run on the webpage. Make sure to return a value.",
             },
         },
         "required": ["url", "script"],
