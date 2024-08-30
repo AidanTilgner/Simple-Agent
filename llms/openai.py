@@ -137,5 +137,8 @@ def init_openai_llm():
 
 
 OpenAILLM = LLM(
-    get_model_response=get_openai_model_response, on_startup=init_openai_llm
+    name="OpenAI",
+    model_name=openai_model,
+    get_model_response=get_openai_model_response,
+    on_startup=init_openai_llm
 )

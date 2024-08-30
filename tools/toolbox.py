@@ -6,6 +6,8 @@ from tools.index import Tool
 from tools.read_file import read_file
 from tools.send_message_to_user import send_message_to_user
 from tools.write_file import write_file
+from tools.web_request import web_request
+from tools.run_js import run_js
 from utils.pubsub import PubSub
 
 DEFAULT_TOOLS = {
@@ -14,6 +16,8 @@ DEFAULT_TOOLS = {
     "write_file": write_file,
     "exec_command": exec_command,
     "edit_file": edit_file,
+    "web_request": web_request,
+    "run_js": run_js,
 }
 
 

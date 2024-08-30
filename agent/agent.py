@@ -1,3 +1,4 @@
+import os
 import json
 import threading
 import time
@@ -11,6 +12,7 @@ from agent.memory import Memory
 from llms.llm import LLM, Message
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
+from utils.tokens import get_current_num_tokens, truncate_message
 
 console = Console()
 
@@ -120,6 +122,7 @@ class Agent:
             response_message = self.llm.get_response(
                 self.messages, self.toolbox.get_tools_listed()
             )
+            response_message = truncate_message(response_message)
 
         self.messages.append(response_message)
 
@@ -195,3 +198,11 @@ class Agent:
         """
 
         return prompt
+
+    def check_token_length(self):
+        try:
+            tokens = get_current_num_tokens(self.messages, self.llm.model_name)
+            return tokens
+        except Exception as e:
+            self.error(f"Error getting token length: {e}")
+            return 0

@@ -18,12 +18,18 @@ class Message:
 class LLM:
     get_model_response: Callable[[List[Message], List[Tool]], Message]
     on_startup: Optional[Callable[[], None]] = None
+    name: str
+    model_name: str
 
     def __init__(
         self,
+        name,
+        model_name,
         get_model_response: Callable[[List[Message], List[Tool]], Message],
         on_startup: Optional[Callable[[], None]] = None,
     ):
+        self.name = name
+        self.model_name = model_name
         self.get_model_response = get_model_response
         self.on_startup = on_startup
 
