@@ -26,6 +26,8 @@ class Agent:
             You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
             If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
             When you have open tasks, you should focus on completing them.
+
+            Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
             """,
             tool_calls=None,
             tool_call_id=None,
