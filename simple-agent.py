@@ -19,7 +19,7 @@ load_dotenv()
 
 console = Console()
 
-llm_choice = "openai"  # This will be modifiable in the future
+llm_choice = os.environ.get("MODEL_CHOICE", "openai")  # This will be modifiable in the future
 verbose = False
 silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
