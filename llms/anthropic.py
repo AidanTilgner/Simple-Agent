@@ -185,6 +185,7 @@ def get_anthropic_model_response(
     )
 
     message = anthropic_client.messages.create(
+        system=system_prompt,
         model=anthropic_model,
         max_tokens=int(os.environ.get("MAX_TOKENS", 1024)),
         messages=formatted_messages,
