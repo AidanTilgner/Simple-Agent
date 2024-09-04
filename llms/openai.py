@@ -91,7 +91,7 @@ def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
     raise ValueError(f"Invalid message role: {message.role}")
 
 
-def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Message:
+def get_openai_model_response(messages: List[Message], tools: List[Tool], system_prompt: str) -> Message:
     if not openai_client:
         raise ValueError("OpenAI client not initialized")
 
@@ -99,7 +99,17 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Mes
 
     response = openai_client.chat.completions.create(
         model=openai_model,
-        messages=[message_to_openai_message(message) for message in messages],
+        max_tokens=int(os.environ.get("MAX_TOKENS", 1024)),
+        messages=[
+            message_to_openai_message(
+            Message(
+                id=None,
+                role="system",
+                content=system_prompt,
+                tool_calls=None,
+                tool_call_id=None,
+            ))
+        ] + [message_to_openai_message(message) for message in messages],
         tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
         parallel_tool_calls=True,
         tool_choice="required",
@@ -109,6 +119,7 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Mes
 
     if message.tool_calls is None:
         return Message(
+            id=None,
             content=message.content,
             role=message.role,
             tool_calls=None,
@@ -116,6 +127,7 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool]) -> Mes
         )
 
     return Message(
+        id=None,
         content=None,
         role=message.role,
         tool_calls=[openai_tool_call_to_tool_call(tc) for tc in message.tool_calls],

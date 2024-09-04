@@ -1,4 +1,3 @@
-import os
 import json
 import threading
 import time
@@ -19,20 +18,7 @@ console = Console()
 
 class Agent:
     pubsub: PubSub
-    messages: List[Message] = [
-        Message(
-            role="system",
-            content="""You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
-            You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
-            If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
-            When you have open tasks, you should focus on completing them.
-
-            Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
-            """,
-            tool_calls=None,
-            tool_call_id=None,
-        )
-    ]
+    messages: List[Message] = []
     llm: LLM
     toolbox: Toolbox
     environment: Environment
@@ -114,6 +100,7 @@ class Agent:
         """
         self.messages.append(
             Message(
+                id=None,
                 role="user",
                 content=self.build_prompt(),
                 tool_calls=None,
@@ -159,6 +146,7 @@ class Agent:
             self.pubsub.publish("new_tool_message", returned_message)
             self.messages.append(
                 Message(
+                id=None,
                     content=returned_message,
                     role="tool",
                     tool_call_id=tool_call.id,

@@ -12,6 +12,7 @@ from rich.markdown import Markdown
 
 from agent.agent import Agent
 from llms.openai import OpenAILLM
+from llms.anthropic import AnthropicLLM
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
 
@@ -25,8 +26,17 @@ silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
 os.makedirs(log_directory, exist_ok=True)  # Ensure the log directory exists
 
+SYSTEM_PROMPT="""You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
+You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
+If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
+When you have open tasks, you should focus on completing them.
+
+Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
+"""
+
 LLM_CHOICE_MAP = {
     "openai": OpenAILLM,
+    "anthropic": AnthropicLLM,
 }
 LLM = LLM_CHOICE_MAP[llm_choice]
 PUBSUB = PubSub()
@@ -106,7 +116,7 @@ PUBSUB.subscribe("new_agent_message", on_new_agent_message)
 PUBSUB.subscribe("exit_signal", handle_exit)
 
 if __name__ == "__main__":
-    LLM.startup()
+    LLM.startup(SYSTEM_PROMPT)
 
     parser = argparse.ArgumentParser(description="Run the Simmy chatbot.")
     parser.add_argument("--llm", type=str, default="openai", help="The LLM to use.")
