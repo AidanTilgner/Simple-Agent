@@ -146,7 +146,7 @@ class Agent:
             self.pubsub.publish("new_tool_message", returned_message)
             self.messages.append(
                 Message(
-                id=None,
+                    id=None,
                     content=returned_message,
                     role="tool",
                     tool_call_id=tool_call.id,

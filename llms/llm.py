@@ -15,6 +15,7 @@ class Message:
     def to_json(self):
         return asdict(self)
 
+
 class LLM:
     get_model_response: Callable[[List[Message], List[Tool], str], Message]
     on_startup: Optional[Callable[[], None]] = None
@@ -26,7 +27,7 @@ class LLM:
         self,
         name,
         model_name,
-        get_model_response: Callable[[List[Message], List[Tool], str] , Message],
+        get_model_response: Callable[[List[Message], List[Tool], str], Message],
         on_startup: Optional[Callable[[], None]] = None,
     ):
         self.name = name
@@ -44,7 +45,9 @@ class LLM:
 
     def get_text_response(self, message: str, system_prompt: str) -> str:
         response = self.get_model_response(
-            [Message(id=None, content=message, role="user", tool_calls=None)], [], system_prompt
+            [Message(id=None, content=message, role="user", tool_calls=None)],
+            [],
+            system_prompt,
         )
         if not response.content:
             return ""

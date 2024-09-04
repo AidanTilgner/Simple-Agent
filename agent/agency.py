@@ -89,7 +89,8 @@ class Agency:
                     self.pubsub.publish("task_completed", task)
                     if not self.silence_actions:
                         console.print(
-                            f"Completed task: [italic]{task.description}[/italic]", style="green"
+                            f"Completed task: [italic]{task.description}[/italic]",
+                            style="green",
                         )
                     return True
             console.print(f"Task {task_id} not found.", style="bold red")

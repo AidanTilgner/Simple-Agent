@@ -91,7 +91,9 @@ def message_to_openai_message(message: Message) -> ChatCompletionMessageParam:
     raise ValueError(f"Invalid message role: {message.role}")
 
 
-def get_openai_model_response(messages: List[Message], tools: List[Tool], system_prompt: str) -> Message:
+def get_openai_model_response(
+    messages: List[Message], tools: List[Tool], system_prompt: str
+) -> Message:
     if not openai_client:
         raise ValueError("OpenAI client not initialized")
 
@@ -102,14 +104,16 @@ def get_openai_model_response(messages: List[Message], tools: List[Tool], system
         max_tokens=int(os.environ.get("MAX_TOKENS", 1024)),
         messages=[
             message_to_openai_message(
-            Message(
-                id=None,
-                role="system",
-                content=system_prompt,
-                tool_calls=None,
-                tool_call_id=None,
-            ))
-        ] + [message_to_openai_message(message) for message in messages],
+                Message(
+                    id=None,
+                    role="system",
+                    content=system_prompt,
+                    tool_calls=None,
+                    tool_call_id=None,
+                )
+            )
+        ]
+        + [message_to_openai_message(message) for message in messages],
         tools=tool_list if len(tool_list) > 0 else NOT_GIVEN,
         parallel_tool_calls=True,
         tool_choice="required",
@@ -152,5 +156,5 @@ OpenAILLM = LLM(
     name="OpenAI",
     model_name=openai_model,
     get_model_response=get_openai_model_response,
-    on_startup=init_openai_llm
+    on_startup=init_openai_llm,
 )

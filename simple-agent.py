@@ -20,13 +20,15 @@ load_dotenv()
 
 console = Console()
 
-llm_choice = os.environ.get("MODEL_CHOICE", "openai")  # This will be modifiable in the future
+llm_choice = os.environ.get(
+    "MODEL_CHOICE", "openai"
+)  # This will be modifiable in the future
 verbose = False
 silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
 os.makedirs(log_directory, exist_ok=True)  # Ensure the log directory exists
 
-SYSTEM_PROMPT="""You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
+SYSTEM_PROMPT = """You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
 You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
 If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
 When you have open tasks, you should focus on completing them.
@@ -124,7 +126,9 @@ if __name__ == "__main__":
         "--verbose", action="store_true", help="Enable verbose logging."
     )
     parser.add_argument(
-        "--silence-actions", action="store_true", help="Silence actions like function calls and task messages."
+        "--silence-actions",
+        action="store_true",
+        help="Silence actions like function calls and task messages.",
     )
     parser.add_argument("--clear-logs", action="store_true", help="Clear the logs.")
     args = parser.parse_args()

@@ -4,6 +4,7 @@ import tiktoken
 
 from llms.llm import Message
 
+
 def get_current_num_tokens(messages: List[Message], model: str):
     encoding = tiktoken.encoding_for_model(model)
     num_tokens = 0

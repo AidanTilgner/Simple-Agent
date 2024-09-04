@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from utils.pubsub import PubSub
 from typing import Any
 
+
 def run(ps: PubSub, args: Any):
     if not args or "url" not in args:
         return "Error running web_request: No URL provided."
@@ -26,6 +27,7 @@ def run(ps: PubSub, args: Any):
         return f"Error occurred: {err}"
     finally:
         driver.quit()
+
 
 run_js = Tool(
     name="run_js",

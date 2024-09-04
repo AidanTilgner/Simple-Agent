@@ -3,6 +3,7 @@ from utils.pubsub import PubSub
 import requests
 from typing import Any
 
+
 def run(ps: PubSub, args: Any):
     if not args or "url" not in args:
         return "Error running web_request: No URL provided."
@@ -14,7 +15,9 @@ def run(ps: PubSub, args: Any):
     data = args.get("data", None)
 
     try:
-        response = requests.request(method, url, headers=headers, params=params, data=data)
+        response = requests.request(
+            method, url, headers=headers, params=params, data=data
+        )
         response.raise_for_status()
         return f"URL Content:\n```\n{response.text}\n```"
     except requests.exceptions.HTTPError as http_err:
