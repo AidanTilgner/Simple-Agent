@@ -1,6 +1,5 @@
 from tools.index import Tool
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from utils.pubsub import PubSub
@@ -9,7 +8,7 @@ from typing import Any
 def run(ps: PubSub, args: Any):
     if not args or "url" not in args:
         return "Error running web_request: No URL provided."
-    if not "script" in args:
+    if "script" not in args:
         return "Error running run_js: No script provided."
 
     url = args["url"]
