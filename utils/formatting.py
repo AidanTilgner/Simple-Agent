@@ -14,4 +14,10 @@ def parse_range(range: str, length: int):
     else:
         raise ValueError("Invalid range format")
 
+    # Validate range bounds
+    if start is not None and (start < 1 or start > length):
+        return None, None
+    if end is not None and (end < 1 or end > length):
+        return None, None
+
     return start, end

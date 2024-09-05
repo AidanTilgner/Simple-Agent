@@ -9,3 +9,4 @@ logs/
 pyrightconfig.json
 playground/*
 .ruff_cache/
+_private/

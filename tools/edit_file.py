@@ -20,9 +20,13 @@ def run(pubsub: PubSub, args: Any):
         if start is None or end is None:
             return "Invalid selection range"
 
-        start -= 1
-        end = len(lines) if end is None else end
-        new_content = lines[:start] + [content] + lines[end:]
+        start -= 1  # Adjust for zero-based indexing
+
+        # Ensure end is within bounds and adjust for zero-based index
+        end = len(lines) if end is None else min(end, len(lines))
+
+        # Insert content with newline if needed
+        new_content = lines[:start] + [content + "\n"] + lines[end:]
 
         new_content = "".join(new_content)
 
@@ -31,7 +35,6 @@ def run(pubsub: PubSub, args: Any):
 
         return f"New file contents:\n```\n{add_line_numbers(new_content)}\n```"
     except Exception as e:
-        # For better debugging, consider logging the exception with traceback
         import traceback
 
         traceback.print_exc()
