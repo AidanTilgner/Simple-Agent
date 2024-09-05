@@ -58,7 +58,6 @@ class Agent:
 
     def stop(self):
         self.running = False
-        self.thread.join()
 
     def error(self, message: str):
         self.pubsub.publish("agent_error", message)
