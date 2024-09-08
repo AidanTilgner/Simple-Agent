@@ -161,6 +161,11 @@ if __name__ == "__main__":
     # Start the interaction loop
     prompt_user()
 
+    try:
+        agent.thread.join()
+    except KeyboardInterrupt:
+        handle_exit("Exiting agent.")
+
     # Wait for the agent thread to finish before exiting
     agent.thread.join()
     print("Shutting down...")
