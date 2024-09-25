@@ -1,3 +1,5 @@
+Good Prompting Practices
+---
 Good practices regarding prompts include:
 1. Priming: scattering breadcrumbs for the agent to guide it's reasoning
 2. Clarity: make the prompt clear and consice, LLMs thrive on high-quality inputs
