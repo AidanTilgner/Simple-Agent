@@ -70,14 +70,18 @@ class Agent:
         self.pubsub.publish("agent_log", json_messages)
 
     def run(self):
-        while self.running:
+        if self.running:
             if self.check_waking_state():
                 self.log_messages()
                 self.iteration += 1
                 if self.verbose:
                     self.log(f"Iteration {self.iteration}")
-                self.reason()
+                response_message = self.reason()
+                self.act(response_message)
+                self.run()
+
             time.sleep(1)
+            self.run()
 
     def check_waking_state(self):
         if self.agency.has_incomplete_tasks():
@@ -116,7 +120,8 @@ class Agent:
 
         if self.verbose:
             self.log(f"Response message: {response_message}\n")
-        self.act(response_message)
+
+        return response_message
 
     def act(self, message: Message):
         """
@@ -153,6 +158,7 @@ class Agent:
                 )
             )
             self.log(returned_message)
+        return True
 
     def percieve(self):
         """

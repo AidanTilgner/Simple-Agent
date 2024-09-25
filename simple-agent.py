@@ -34,6 +34,8 @@ If the requirements of a task are complete, you should mark the task as complete
 When you have open tasks, you should focus on completing them.
 
 Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
+
+Remember that a normal message doesn't prompt the user, you'll have to do it specifically.
 """
 
 LLM_CHOICE_MAP = {
@@ -86,6 +88,9 @@ def handle_logs():
     PUBSUB.subscribe("toolbox_log", toolbox_log)
 
 
+prompting_user = False
+
+
 def prompt_user():
     user_input = console.input("[cyan bold]You:[/cyan bold] ")
     if user_input.lower() == "exit":
@@ -96,6 +101,12 @@ def prompt_user():
 
 
 def on_new_agent_message(message: str):
+    console.print("[blue bold]Simmy:[/blue bold]")
+    console.print(Markdown(message))
+    write_to_file(os.path.join(log_directory, "agent.thread"), f"Agent: {message}")
+
+
+def on_new_agent_message_with_prompt(message: str):
     console.print("[blue bold]Simmy:[/blue bold]")
     console.print(Markdown(message))
     write_to_file(os.path.join(log_directory, "agent.thread"), f"Agent: {message}")
@@ -115,6 +126,7 @@ def signal_handler(sig, frame):
 
 
 PUBSUB.subscribe("new_agent_message", on_new_agent_message)
+PUBSUB.subscribe("new_agent_prompt", on_new_agent_message_with_prompt)
 PUBSUB.subscribe("exit_signal", handle_exit)
 
 if __name__ == "__main__":

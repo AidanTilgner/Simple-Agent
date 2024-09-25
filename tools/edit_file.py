@@ -20,11 +20,6 @@ def run(pubsub: PubSub, args: Any):
         if start is None or end is None:
             return "Invalid selection range"
 
-        start -= 1  # Adjust for zero-based indexing
-
-        # Ensure end is within bounds and adjust for zero-based index
-        end = len(lines) if end is None else min(end, len(lines))
-
         # Insert content with newline if needed
         new_content = lines[:start] + [content + "\n"] + lines[end:]
 
@@ -55,7 +50,7 @@ edit_file = Tool(
             "selection": {
                 "type": "string",
                 "pattern": "^d+-d+$",
-                "description": "The inclusive target line numbers to select, formatted (start-end), you may omit the end or start to select from the beginning or to the end.",
+                "description": "The inclusive target line numbers to select, formatted (start-end), you may omit the end and/or start to select from the beginning or to the end. '-' selects the entire file.",
             },
             "content": {
                 "type": "string",

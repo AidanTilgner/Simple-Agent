@@ -23,9 +23,10 @@ class Environment:
         )
 
     def listen_to_new_tool_messages(self):
-        self.pubsub.subscribe(
-            "new_tool_message", lambda message: self.new_tool_messages.append(message)
-        )
+        def new_tool_message(message):
+            self.new_tool_messages.append(message)
+
+        self.pubsub.subscribe("new_tool_message", new_tool_message)
 
     def get_environment(self):
         unseen_messages = self.unseen_messages
