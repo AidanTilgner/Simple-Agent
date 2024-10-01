@@ -11,6 +11,7 @@ from tools.send_message_to_user import (
 from tools.write_file import write_file
 from tools.web_request import web_request
 from tools.run_js import run_js
+from tools.search_directory import search_directory
 from utils.pubsub import PubSub
 
 DEFAULT_TOOLS = {
