@@ -35,8 +35,8 @@ def run_prompt_user(ps: PubSub, args: Any):
     return "Message sent to user."
 
 
-send_message_to_user_with_prompt = Tool(
-    name="send_message_to_user_with_prompt",
+prompt_user = Tool(
+    name="prompt_user",
     description="Send a message to the user, and prompt them for a response.",
     function=run_prompt_user,
     parameters={

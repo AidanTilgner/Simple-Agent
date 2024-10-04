@@ -33,9 +33,9 @@ You should orient yourself around tasks. You can create tasks, and them mark the
 If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
 When you have open tasks, you should focus on completing them.
 
-Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
-
-Remember that a normal message doesn't prompt the user, you'll have to do it specifically.
+REMEMBER:
+    - Use the `prompt_user` tool once you've completed your task or you will be stuck in a loop.
+    - Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
 """
 
 LLM_CHOICE_MAP = {

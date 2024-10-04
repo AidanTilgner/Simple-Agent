@@ -6,7 +6,7 @@ from tools.index import Tool
 from tools.read_file import read_file
 from tools.send_message_to_user import (
     send_message_to_user,
-    send_message_to_user_with_prompt,
+    prompt_user,
 )
 from tools.write_file import write_file
 from tools.web_request import web_request
@@ -15,7 +15,7 @@ from utils.pubsub import PubSub
 
 DEFAULT_TOOLS = {
     "send_message_to_user": send_message_to_user,
-    "send_message_to_user_with_prompt": send_message_to_user_with_prompt,
+    "prompt_user": prompt_user,
     "read_file": read_file,
     "write_file": write_file,
     "exec_command": exec_command,
