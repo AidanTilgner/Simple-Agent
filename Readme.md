@@ -1,5 +1,8 @@
 # Simple Agent
 
+> [!note]
+> This is a specialty branch, dedicated to Software development. For more information, check out the `Specialty.md` file.
+
 > [!warning]
 > Simple agent can run commands on your machine. Be aware of the potential for it to make modifications to your system.
 
