@@ -1,95 +1,101 @@
-# Simple-Agent/tools/search_directory.py
-from tools.index import Tool
+from typing import Any
 import os
 import re
+from tools.index import Tool
 from utils.pubsub import PubSub
-from typing import Any, List, Dict, Optional
-
-
-def search_files(
-    directory: str, pattern: str, ignore: Optional[List[str]] = None, depth: int = -1
-) -> List[Dict[str, Any]]:
-    matches = []
-    regex = re.compile(pattern)
-    ignore_set = set(ignore or [])
-
-    def should_ignore(file_path: str) -> bool:
-        return any(ignored in file_path for ignored in ignore_set)
-
-    def get_depth(root: str) -> int:
-        return root[len(directory) :].count(os.sep)
-
-    for root, _, files in os.walk(directory):
-        if depth != -1 and get_depth(root) > depth:
-            continue
-        for file in files:
-            file_path = os.path.join(root, file)
-            if should_ignore(file_path):
-                continue
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    for match in regex.finditer(content):
-                        matches.append(
-                            {
-                                "file": file_path,
-                                "line": match.string.splitlines().index(match.group(0))
-                                + 1,
-                                "match": match.group(0),
-                            }
-                        )
-            except Exception as e:
-                matches.append({"file": file_path, "error": str(e)})
-
-    return matches
 
 
 def run(ps: PubSub, args: Any):
-    if not args or "directory" not in args:
-        return "Error running search_directory: No directory provided."
-    if "pattern" not in args:
-        return "Error running search_directory: No pattern provided."
+    if not args or 'directory_path' not in args or 'content' not in args or 'type' not in args:
+        return "Error running search_directory: Missing required arguments."
 
-    directory = args["directory"]
-    pattern = args["pattern"]
-    ignore = args.get("ignore", [])
-    depth = args.get("depth", -1)
+    directory_path = args["directory_path"]
+    search_content = args["content"]
+    search_type = args["type"]
+    file_extension = args.get("file_extension", None)  # Optional file extension filter
+    max_results = args.get("max_results", None)  # Optional limit on the number of matches
+
+    matching_files = []
+    match_count = 0  # Track number of matches
 
     try:
-        results = search_files(directory, pattern, ignore, depth)
-        return f"Search results:\n```\n{results}\n```"
-    except Exception as err:
-        return f"Error occurred: {err}"
+        # Compile regex outside loop for efficiency in case of regex search
+        regex_pattern = re.compile(search_content) if search_type == "regex" else None
+
+        for root, _, files in os.walk(directory_path):
+            for file in files:
+                # Filter by file extension if provided
+                if file_extension and not file.endswith(file_extension):
+                    continue
+
+                file_path = os.path.join(root, file)
+
+                # Try opening the file and reading content in chunks
+                try:
+                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                        for line in f:
+                            if search_type == "text-case-sensitive" and search_content in line:
+                                matching_files.append(file_path)
+                                match_count += 1
+                                break
+                            elif search_type == "text-case-insensitive" and search_content.lower() in line.lower():
+                                matching_files.append(file_path)
+                                match_count += 1
+                                break
+                            elif search_type == "regex" and regex_pattern.search(line):
+                                matching_files.append(file_path)
+                                match_count += 1
+                                break
+
+                except Exception as file_error:
+                    # Handle individual file read errors (e.g., permissions)
+                    ps.publish(f"Error reading file {file_path}: {file_error}")
+                    continue
+
+                # Stop if max_results is reached
+                if max_results and match_count >= max_results:
+                    break
+            if max_results and match_count >= max_results:
+                break
+
+        if matching_files:
+            return f"Matching files:\n{chr(10).join(matching_files)}"
+        else:
+            return "No matching files found."
+
+    except Exception as e:
+        return f"Error searching directory: {e}"
 
 
 search_directory = Tool(
     name="search_directory",
-    description="Search for a pattern in files within a given directory. Returns list of matches.",
+    description="Search a directory for content of a given type.",
     function=run,
     parameters={
         "type": "object",
         "properties": {
-            "directory": {
+            "directory_path": {
                 "type": "string",
-                "description": "The directory to search in.",
+                "description": "The path to the directory to search.",
             },
-            "pattern": {
+            "content": {
                 "type": "string",
-                "description": "The regex pattern to search for in the files.",
+                "description": "The content to search for.",
             },
-            "ignore": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                },
-                "description": "List of files or directories to ignore.",
+            "type": {
+                "type": "string",
+                "enum": ["text-case-sensitive", "text-case-insensitive", "regex"],
+                "description": "The type of search to perform.",
             },
-            "depth": {
+            "file_extension": {
+                "type": "string",
+                "description": "Optional file extension filter (e.g., '.txt').",
+            },
+            "max_results": {
                 "type": "integer",
-                "description": "The maximum depth to search. -1 for unlimited depth.",
-                "default": -1,
+                "description": "Optional maximum number of matching files to return.",
             },
         },
-        "required": ["directory", "pattern"],
+        "required": ["directory_path", "content", "type"],
     },
 )

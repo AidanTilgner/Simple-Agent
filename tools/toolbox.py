@@ -23,6 +23,7 @@ DEFAULT_TOOLS = {
     "edit_file": edit_file,
     "web_request": web_request,
     "run_js": run_js,
+    "search_directory": search_directory,
 }
 
 
