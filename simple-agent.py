@@ -13,6 +13,7 @@ from rich.markdown import Markdown
 from agent.agent import Agent
 from llms.openai import OpenAILLM
 from llms.anthropic import AnthropicLLM
+from memory.simple_vector_store import SVSVectorStore
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
 
@@ -23,6 +24,7 @@ console = Console()
 llm_choice = os.environ.get(
     "MODEL_CHOICE", "openai"
 )  # This will be modifiable in the future
+vector_store_choice = os.environ.get("VECTOR_STORE_CHOICE", "none")
 verbose = False
 silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
@@ -43,6 +45,10 @@ LLM_CHOICE_MAP = {
     "anthropic": AnthropicLLM,
 }
 LLM = LLM_CHOICE_MAP[llm_choice]
+
+VECTOR_STORE_CHOICE_MAP = {"simple_vector_store": SVSVectorStore, "none": None}
+VECTOR_STORE = VECTOR_STORE_CHOICE_MAP[vector_store_choice]
+
 PUBSUB = PubSub()
 TOOLBOX = Toolbox(PUBSUB)
 
@@ -164,7 +170,14 @@ if __name__ == "__main__":
     log_thread.start()
 
     # Create and start the agent
-    agent = Agent(PUBSUB, LLM, TOOLBOX, verbose, silence_actions)
+    agent = Agent(
+        pubsub=PUBSUB,
+        llm=LLM,
+        toolbox=TOOLBOX,
+        vector_store=VECTOR_STORE,
+        verbose=verbose,
+        silence_actions=silence_actions,
+    )
     agent.start()
 
     # Set up the signal handler for graceful shutdown

@@ -1,14 +1,15 @@
 import json
 import threading
 import time
-from typing import List
+from typing import List, Optional
 
 from rich.console import Console
 
 from agent.agency import Agency
 from agent.environment import Environment
-from agent.memory import Memory
+from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
+from memory.vector_store import VectorStore
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
@@ -22,7 +23,8 @@ class Agent:
     llm: LLM
     toolbox: Toolbox
     environment: Environment
-    memory: Memory
+    memory: MemoryEngine
+    vector_store: Optional[VectorStore]
     agency: Agency
     running: bool = False
     awake: bool = False
@@ -36,6 +38,7 @@ class Agent:
         pubsub: PubSub,
         llm: LLM,
         toolbox: Toolbox,
+        vector_store: Optional[VectorStore],
         verbose: bool,
         silence_actions: bool,
     ) -> None:
@@ -45,7 +48,8 @@ class Agent:
         self.verbose = verbose
         self.silence_actions = silence_actions
         self.environment = Environment(pubsub)
-        self.memory = Memory(pubsub)
+        self.memory = MemoryEngine(pubsub, vector_store)
+        self.vector_store = vector_store
         self.agency = Agency(pubsub, llm=llm, silence_actions=silence_actions)
         self.thread = threading.Thread(target=self.run)
 
@@ -72,6 +76,7 @@ class Agent:
 
     def run(self):
         if self.running:
+            self.memory.sync_messages(self.messages)
             if self.check_waking_state():
                 self.log_messages()
                 self.iteration += 1
@@ -171,9 +176,7 @@ class Agent:
         """
         This is where the memory of the agent will be queried.
         """
-        if len(self.messages) == 0 or self.messages[-1].content is None:
-            return "Memory is empty."
-        return self.memory.search_memory(self.messages[-1].content)
+        return self.memory.get_memory()
 
     def get_agency(self):
         """
@@ -187,11 +190,16 @@ class Agent:
         memory = self.remember()
         agency = self.get_agency()
 
-        prompt = f"""
-        Environment: {perception}\n
-        Memory: {memory}\n
-        Task List: {agency}\n
-        """
+        prompt = ""
+
+        if perception:
+            prompt += f"Environment: {perception}\n"
+
+        if memory:
+            prompt += f"Memory: {memory}\n"
+
+        if agency:
+            prompt += f"Task List: {agency}\n"
 
         return prompt
 
