@@ -51,6 +51,7 @@ class Agent:
 
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
+        self.toolbox.register_tool(self.agency.modify_task_notes_tool())
 
     def start(self):
         self.running = True
