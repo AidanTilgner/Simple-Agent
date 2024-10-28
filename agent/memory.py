@@ -24,6 +24,13 @@ class MemoryEngine:
         self.vector_store = vector_store
         self.llm = llm
 
+    def is_setup(self) -> bool:
+        if self.vector_store is None:
+            return False
+        if self.llm is None:
+            return False
+        return True
+
     def sync_messages(self, messages: List[Message]):
         self.messages = messages
 
@@ -39,7 +46,6 @@ class MemoryEngine:
             {record.title} | {record.importance} | {record.type} | {record.content}
             """
         return memory
-
 
     def evaluate_memory(self):
         # go through proposed memory, and choose memories which seem most useful
@@ -79,7 +85,9 @@ class MemoryEngine:
         if not self.vector_store:
             return "No memory available."
         self.vector_store.add_record(memory)
-        console.print(f"Remembered: [italic]{memory.title}[/italic]", style="medium_orchid3")
+        console.print(
+            f"Remembered: [italic]{memory.title}[/italic]", style="medium_orchid3"
+        )
         return memory
 
     def add_memory_tool(self) -> Tool:

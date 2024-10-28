@@ -49,7 +49,7 @@ LLM_CHOICE_MAP = {
 LLM = LLM_CHOICE_MAP[llm_choice]
 
 VECTOR_STORE_CHOICE_MAP = {"simple_vector_store": SVSVectorStore, "none": None}
-VECTOR_STORE = VECTOR_STORE_CHOICE_MAP[vector_store_choice]
+VECTOR_STORE = VECTOR_STORE_CHOICE_MAP.get(vector_store_choice, None)
 
 PUBSUB = PubSub()
 TOOLBOX = Toolbox(PUBSUB)
