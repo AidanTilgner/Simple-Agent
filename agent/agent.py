@@ -47,10 +47,10 @@ class Agent:
         self.toolbox = toolbox
         self.verbose = verbose
         self.silence_actions = silence_actions
-        self.environment = Environment(pubsub)
-        self.memory = MemoryEngine(pubsub, vector_store)
+        self.environment = Environment(pubsub=pubsub)
+        self.memory = MemoryEngine(pubsub=pubsub, vector_store=vector_store, llm=llm)
         self.vector_store = vector_store
-        self.agency = Agency(pubsub, llm=llm, silence_actions=silence_actions)
+        self.agency = Agency(pubsub=pubsub, llm=llm, silence_actions=silence_actions)
         self.thread = threading.Thread(target=self.run)
 
         self.toolbox.register_tool(self.agency.create_task_tool())
@@ -82,6 +82,7 @@ class Agent:
                 self.iteration += 1
                 if self.verbose:
                     self.log(f"Iteration {self.iteration}")
+                self.memory.evaluate_memory()
                 response_message = self.reason()
                 self.act(response_message)
                 self.run()
