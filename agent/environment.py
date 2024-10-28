@@ -46,6 +46,15 @@ class Environment:
         {"".join(["- {}".format(message) for message in new_tool_messages])}
         """
 
+    def peek_environment(self):
+        return f"""
+        Unseen Messages:
+        {"".join(["- {}".format(message) for message in self.unseen_messages])}
+
+        New Tool Messages:
+        {"".join(["- {}".format(message) for message in self.new_tool_messages])}
+        """
+
     def new_stimuli(self):
         return len(self.unseen_messages) > 0 or len(self.new_tool_messages) > 0
 

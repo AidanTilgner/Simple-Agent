@@ -38,6 +38,8 @@ When you have open tasks, you should focus on completing them.
 REMEMBER:
     - Use the `prompt_user` tool once you've completed your task or you will be stuck in a loop.
     - Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
+    - Memory should be used to store information which will be useful in the future, either semantics (facts, concepts) or episodes (events, experiences)
+    - It's likely unnecessary to remember the mundane
 """
 
 LLM_CHOICE_MAP = {

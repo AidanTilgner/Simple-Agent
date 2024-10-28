@@ -27,11 +27,19 @@ class MemoryEngine:
     def sync_messages(self, messages: List[Message]):
         self.messages = messages
 
-    def get_memory(self):
+    def get_memory(self) -> str:
         # get the current memory
         if len(self.messages) == 0:
             return "Memory is empty"
-        pass
+        memory = """
+        Title | Importance | Type | Content
+        """
+        for record in self.current_memory:
+            memory += f"""
+            {record.title} | {record.importance} | {record.type} | {record.content}
+            """
+        return memory
+
 
     def evaluate_memory(self):
         # go through proposed memory, and choose memories which seem most useful
@@ -39,15 +47,25 @@ class MemoryEngine:
         self.delete_memories([])
         self.commit_memory()
 
+    def get_context(self):
+        context = ""
+        for content in [
+            m.content
+            for m in self.messages
+            if m.content is not None and m.role in ["user", "system", "tool"]
+        ]:
+            context += content + " "
+        return context
+
     def propose_memory(self):
         if not self.vector_store:
             return "No memory available."
         if len(self.messages) == 0 or not self.messages[-1].content:
             return "No memory available."
-        last_content = self.messages[-1].content
-        if not last_content:
+        context = self.get_context()
+        if not context:
             return
-        memory = self.vector_store.query(last_content)
+        memory = self.vector_store.query(context)
         self.proposed_memory = memory
 
     def commit_memory(self):
@@ -61,34 +79,8 @@ class MemoryEngine:
         if not self.vector_store:
             return "No memory available."
         self.vector_store.add_record(memory)
+        console.print(f"Remembered: [italic]{memory.title}[/italic]", style="medium_orchid3")
         return memory
-
-    def run_decisive_memory_addition(self):
-        if len(self.messages) == 0:
-            return
-        messages = [
-            Message(
-                id=None,
-                role="system",
-                content=f"""
-                You are subconscious memory. Your job is to take context of a conversation, and manage memory.
-                Based on the context, you must first decide whether there's anything worth remembering.
-                If there is, use the tools provided to add the memory.
-                If there isn't, do nothing.
-
-                Here's the context:
-                ---
-                {self.messages[-1].content}
-                ---
-                """,
-                tool_calls=None,
-                tool_call_id=None,
-            )
-        ]
-        with console.status("[bold purple]Memory working...", spinner="dots12"):
-            self.llm.get_response(
-                messages, [self.add_memory_tool(), self.dont_add_memory_tool()]
-            )
 
     def add_memory_tool(self) -> Tool:
         def run(pubsub: PubSub, args: Any):
@@ -99,13 +91,10 @@ class MemoryEngine:
 
             if not title:
                 return "Error adding memory: No title provided."
-
             if not content:
                 return "Error adding memory: No content provided."
-
             if not type:
                 return "Error adding memory: No type provided."
-
             if not importance:
                 return "Error adding memory: No importance provided."
 
@@ -120,7 +109,7 @@ class MemoryEngine:
             result = self.add_memory(memory)
             if isinstance(result, str) and result.startswith("No memory available"):
                 return result
-            return f"Memory added with content: {content}"
+            return "Memory added successfully."
 
         return Tool(
             name="add_memory",
@@ -139,10 +128,11 @@ class MemoryEngine:
                     },
                     "importance": {
                         "type": "integer",
-                        "description": "The importance of the memory to add. Ranges from 1 to 3. 1 is the least important, 3 is the most important.",
+                        "description": "The importance of the memory between 1 and 5. 1 being unimportant and unuseful, 5 being very important and useful.",
                     },
                     "type": {
                         "type": "string",
+                        "pattern": "^(semantic|episodic)$",
                         "description": "The type of the memory this is considered. Either semantic or episodic.",
                     },
                 },

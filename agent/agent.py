@@ -56,6 +56,7 @@ class Agent:
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
         self.toolbox.register_tool(self.agency.modify_task_notes_tool())
+        self.toolbox.register_tool(self.memory.add_memory_tool())
 
     def start(self):
         self.running = True
@@ -82,7 +83,6 @@ class Agent:
                 self.iteration += 1
                 if self.verbose:
                     self.log(f"Iteration {self.iteration}")
-                self.memory.evaluate_memory()
                 response_message = self.reason()
                 self.act(response_message)
                 self.run()
@@ -116,6 +116,8 @@ class Agent:
                 tool_calls=None,
             )
         )
+
+        self.memory.evaluate_memory()
 
         with console.status("[bold blue]Simmy is thinking...", spinner="dots12"):
             response_message = self.llm.get_response(
@@ -197,7 +199,7 @@ class Agent:
             prompt += f"Environment: {perception}\n"
 
         if memory:
-            prompt += f"Memory: {memory}\n"
+            prompt += f"Memory:\n{memory}\n"
 
         if agency:
             prompt += f"Task List: {agency}\n"
