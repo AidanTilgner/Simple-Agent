@@ -39,11 +39,11 @@ class MemoryEngine:
         if len(self.messages) == 0:
             return "Memory is empty"
         memory = """
-        Title | Importance | Type | Content
+        Title | Type | Content
         """
         for record in self.current_memory:
             memory += f"""
-            {record.title} | {record.importance} | {record.type} | {record.content}
+            {record.title} | {record.type} | {record.content}
             """
         return memory
 
@@ -83,7 +83,7 @@ class MemoryEngine:
 
     def add_memory(self, memory: Record):
         if not self.vector_store:
-            return "No memory available."
+            return "Error: Tried to add memory when memory not initialized."
         self.vector_store.add_record(memory)
         console.print(
             f"Remembered: [italic]{memory.title}[/italic]", style="medium_orchid3"
@@ -115,9 +115,9 @@ class MemoryEngine:
                 similarity=None,
             )
             result = self.add_memory(memory)
-            if isinstance(result, str) and result.startswith("No memory available"):
-                return result
-            return "Memory added successfully."
+            if isinstance(result, str) and result.startswith("Error"):
+                return "Something went wrong." + result
+            return f"Memory added: {title}"
 
         return Tool(
             name="add_memory",
