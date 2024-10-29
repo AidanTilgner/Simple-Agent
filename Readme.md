@@ -91,12 +91,15 @@ You might find that using different models is more useful. In the future, there 
 **Adding Tools**
 The `tools/` directory is where you'll find tools. Each tool must fit the `Tool` class, in order to be used by the agent. Check out `toolbox.py` to see a current list of included tools, and how they are used. If you want to add a tool, you can use the `write_file.py`, `read_file.py`, and `send_message_to_user.py` tools as a reference. More tools will be included in the future. This is another area where PRs are welcome.
 
+## Adding Memory
+Check out [the tutorial](/tutorials/adding-memory.md) to learn how to add memory to Simple Agent.
+
 ## Future plans
 
 These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
 
-- [ ] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
-- [ ] Add more tools
-- [ ] Allow selection of additional models
-- [ ] Get better editing
-- [ ] A more robust benchmarking system
+- [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
+- [x] Allow selection of additional models
+- [x] Get better editing
+- [ ] "Modes" that the agent can switch into for specialized operations, with different tool layouts
+- [ ] A more robust benchmarking system through [Benchy](https://github.com/AidanTilgner/Benchy)
