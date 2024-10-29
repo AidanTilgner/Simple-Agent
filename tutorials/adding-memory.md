@@ -64,3 +64,5 @@ SIMPLE_VECTOR_STORE_NAME="simple-agent-memory"
 ```
 
 The most important once to get right here is the `SIMPLE_VECTOR_STORE_DIRECTORY` variable, as this is where all of your memory will be stored. Make sure that this directory exists, and that the agent has read/write permissions to it. Also ensure that it is an absolute path, as relative paths can cause issues.
+
+Also, don't forget (as I have many times) to have your Simple Vector Store server running. You can follow the instructions in the [Simple Vector Store repository](https://github.com/AidanTilgner/Simple-Vector-Store) to get that set up. If it isn't set up, you'll see connection errors from the Simple Vector Store integration.
