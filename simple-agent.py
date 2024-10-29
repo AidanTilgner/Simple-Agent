@@ -32,8 +32,13 @@ silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
 os.makedirs(log_directory, exist_ok=True)  # Ensure the log directory exists
 
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-SYSTEM_PROMPT = open("system_prompt.md").read()
+# Construct the absolute path to system_prompt.md
+system_prompt_path = os.path.join(script_dir, "system_prompt.md")
+
+SYSTEM_PROMPT = open(system_prompt_path).read()
 
 if not SYSTEM_PROMPT:
     console.print(
