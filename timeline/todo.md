@@ -6,3 +6,6 @@
 
 # Meta
 - [ ] Build in "modes" to allow for specialization
+
+# Tasks
+- [ ] Should requirements be completable?

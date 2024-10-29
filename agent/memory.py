@@ -36,8 +36,8 @@ class MemoryEngine:
 
     def get_memory(self) -> str:
         # get the current memory
-        if len(self.messages) == 0:
-            return "Memory is empty"
+        if len(self.current_memory) == 0:
+            return "No memory available"
         memory = """
         Title | Type | Content
         """
@@ -47,30 +47,17 @@ class MemoryEngine:
             """
         return memory
 
-    def evaluate_memory(self):
+    def evaluate_memory(self, context: str):
         # go through proposed memory, and choose memories which seem most useful
-        self.propose_memory()
+        self.propose_memory(context)
         self.delete_memories([])
         self.commit_memory()
 
-    def get_context(self):
-        context = ""
-        for content in [
-            m.content
-            for m in self.messages
-            if m.content is not None and m.role in ["user", "system", "tool"]
-        ]:
-            context += content + " "
-        return context
-
-    def propose_memory(self):
+    def propose_memory(self, context: str):
         if not self.vector_store:
             return "No memory available."
-        if len(self.messages) == 0 or not self.messages[-1].content:
-            return "No memory available."
-        context = self.get_context()
         if not context:
-            return
+            return "No context given, no memory available."
         memory = self.vector_store.query(context)
         self.proposed_memory = memory
 
@@ -135,8 +122,9 @@ class MemoryEngine:
                         "description": "The content of the memory to add.",
                     },
                     "importance": {
-                        "type": "integer",
-                        "description": "The importance of the memory between 1 and 5. 1 being unimportant and unuseful, 5 being very important and useful.",
+                        "type": "string",
+                        "pattern": "^(low|medium|high|extreme)$",
+                        "description": "The initial importance of the memory. What is the likelihood of this memory being significantly useful in the future?",
                     },
                     "type": {
                         "type": "string",

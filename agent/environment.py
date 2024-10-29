@@ -39,7 +39,7 @@ class Environment:
             return ""
 
         return f"""
-        Unseen Messages:
+        New Messages:
         {"".join(["- {}".format(message) for message in unseen_messages])}
 
         New Tool Messages:

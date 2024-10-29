@@ -119,6 +119,24 @@ class Agency:
             console.print(f"Error modifying notes: {e}", style="bold red")
             return False
 
+    def modify_task_requirements(self, task_id: str, requirements: List[str]) -> bool:
+        try:
+            for task in self.tasks:
+                if task.id == task_id:
+                    task.requirements = requirements
+                    self.pubsub.publish("task_requirements_modified", task)
+                    if not self.silence_actions:
+                        console.print(
+                            f"Modified requirements for task: [italic]{task.description}[/italic]",
+                            style="green",
+                        )
+                    return True
+            console.print(f"Task {task_id} not found.", style="bold red")
+            return False
+        except Exception as e:
+            console.print(f"Error modifying requirements: {e}", style="bold red")
+            return False
+
     def create_task_tool(self) -> Tool:
         def run(pubsub: PubSub, args: Any):
             description = args.get("description")
@@ -217,5 +235,41 @@ class Agency:
                     },
                 },
                 "required": ["task_id", "notes"],
+            },
+        )
+
+    def modify_task_requirements_tool(self) -> Tool:
+        def run(pubsub: PubSub, args: Any):
+            task_id = args.get("task_id")
+            requirements = args.get("requirements")
+            if task_id is None:
+                return f"Task with id {task_id} not found."
+            if not requirements:
+                return "Error modifying task: No requirements provided."
+            if not isinstance(requirements, list):
+                return "Error modifying task: Requirements must be a list."
+            worked = self.modify_task_requirements(task_id, requirements)
+            if not worked:
+                return f"Error modifying requirements for task with id {task_id}."
+            return f"Requirements for task with id {task_id} modified."
+
+        return Tool(
+            name="modify_task_requirements",
+            description="Use this to modify the requirements for a task.",
+            function=run,
+            parameters={
+                "type": "object",
+                "properties": {
+                    "task_id": {
+                        "type": "string",
+                        "description": "The id of the task to modify.",
+                    },
+                    "requirements": {
+                        "type": "array",
+                        "description": "The new requirements for the task.",
+                        "items": {"type": "string"},
+                    },
+                },
+                "required": ["task_id", "requirements"],
             },
         )

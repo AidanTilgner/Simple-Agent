@@ -56,6 +56,7 @@ class Agent:
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
         self.toolbox.register_tool(self.agency.modify_task_notes_tool())
+        self.toolbox.register_tool(self.agency.modify_task_requirements_tool())
 
         if self.memory.is_setup():
             self.toolbox.register_tool(self.memory.add_memory_tool())
@@ -110,16 +111,18 @@ class Agent:
         """
         This is where the agent will reason about the environment.
         """
+        self.memory.evaluate_memory(self.environment.peek_environment())
+
+        prompt = self.build_prompt()
+
         self.messages.append(
             Message(
                 id=None,
                 role="user",
-                content=self.build_prompt(),
+                content=prompt,
                 tool_calls=None,
             )
         )
-
-        self.memory.evaluate_memory()
 
         with console.status("[bold blue]Simmy is thinking...", spinner="dots12"):
             response_message = self.llm.get_response(
@@ -198,13 +201,15 @@ class Agent:
         prompt = ""
 
         if perception:
-            prompt += f"Environment: {perception}\n"
+            prompt += f"# Environment:\n{perception}\n"
 
         if memory:
-            prompt += f"Memory:\n{memory}\n"
+            prompt += f"# Memory:\n{memory}\n"
 
         if agency:
-            prompt += f"Task List: {agency}\n"
+            prompt += f"# Agency:\n{agency}\n"
+
+        self.pubsub.publish("new_agent_perception", prompt)
 
         return prompt
 

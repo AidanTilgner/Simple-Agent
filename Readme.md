@@ -83,6 +83,8 @@ You might want to extend or enhance the functionality of the tool, and if you do
 **Modifying Prompts**
 You can modify prompts in the `agent.py`, `agency.py`, `memory.py`, and `environment.py` files. These files are where you'll find the actual programmatic generation logic for several aspects of the prompt. Things might change over time, so I'm not going to go into specifics here. But you might find that you can gain further behavior by modifying these files.
 
+The `system_prompt.md` file is the source of the agent's system prompt, which can be modified as well.
+
 **Using Different Models**
 You might find that using different models is more useful. In the future, there will be additional configuration options that will allow you to use models of your choice. For now, you can take a look at the `openai.py` and `llm.py` files for reference. Essentially, the agent can use any model through the `LLM` interface, so you can implement custom models that way. The main logic for instantiating these are in the `main.py` file, where the default is OpenAI's GPT-4o.
 

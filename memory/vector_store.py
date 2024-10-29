@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional
+from typing import Callable, List, Literal, Optional
 from dataclasses import dataclass
 
 
@@ -9,7 +9,7 @@ class Record:
     content: str
     type: str
     similarity: Optional[float]
-    importance: int
+    importance: Literal["low", "medium", "high", "extreme"]
 
 
 class VectorStore:

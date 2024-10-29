@@ -30,17 +30,13 @@ silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
 os.makedirs(log_directory, exist_ok=True)  # Ensure the log directory exists
 
-SYSTEM_PROMPT = """You are Simmy! A helpful agent, capable of performing tasks through interaction with and instruction by a user.
-You should orient yourself around tasks. You can create tasks, and them mark them as completed when you're done.
-If the requirements of a task are complete, you should mark the task as complete. If new information comes along that isn't covered by an open task, then you should create a new task for it. Managing tasks diligently is key to being a helpful agent.
-When you have open tasks, you should focus on completing them.
+SYSTEM_PROMPT = open("system_prompt.md").read()
 
-REMEMBER:
-    - Use the `prompt_user` tool once you've completed your task or you will be stuck in a loop.
-    - Please use tools efficiently. Use ideas like parallelism and concurrency to your advantage.
-    - Memory should be used to store information which will be useful in the future, either semantics (facts, concepts) or episodes (events, experiences)
-    - It's likely unnecessary to remember the mundane
-"""
+if not SYSTEM_PROMPT:
+    console.print(
+        "[red]Error:[/red] Could not find system prompt. Please ensure system_prompt.md exists."
+    )
+    exit(1)
 
 LLM_CHOICE_MAP = {
     "openai": OpenAILLM,
@@ -63,7 +59,7 @@ def clear_logs():
 
 
 def clear_threads():
-    with open(os.path.join(log_directory, "agent.thread"), "w") as f:
+    with open(os.path.join(log_directory, "last_thread.md"), "w") as f:
         f.write("")
 
 
@@ -78,7 +74,7 @@ def write_to_file(file_path, log: str):
     with log_lock:  # Ensure only one thread writes to a file at a time
         with open(file_path, "a") as f:
             current_timestring = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            f.write(f"{current_timestring}: {log}\n")
+            f.write(f"**{current_timestring}**: {log}\n")
 
 
 def handle_logs():
@@ -104,37 +100,40 @@ def prompt_user():
     if user_input.lower() == "exit":
         console.print("[blue bold]Simmy:[/blue bold] Goodbye!")
         PUBSUB.publish("exit_signal", "User exit")
-    write_to_file(os.path.join(log_directory, "agent.thread"), f"User: {user_input}")
+    write_to_file(os.path.join(log_directory, "last_thread.md"), f"User: {user_input}")
     PUBSUB.publish("new_user_message", user_input)
 
 
 def on_new_agent_message(message: str):
     console.print("[blue bold]Simmy:[/blue bold]")
     console.print(Markdown(message))
-    write_to_file(os.path.join(log_directory, "agent.thread"), f"Agent: {message}")
+    write_to_file(os.path.join(log_directory, "last_thread.md"), f"Agent: {message}")
 
 
 def on_new_agent_message_with_prompt(message: str):
     console.print("[blue bold]Simmy:[/blue bold]")
     console.print(Markdown(message))
-    write_to_file(os.path.join(log_directory, "agent.thread"), f"Agent: {message}")
+    write_to_file(os.path.join(log_directory, "last_thread.md"), f"Agent: {message}")
     prompt_user()
 
+def on_new_agent_perception(perception: str):
+    write_to_file(os.path.join(log_directory, "last_thread.md"), f"Perception:\n{perception}\n")
 
 def handle_exit(m: str):
-    print("Shutting down agent...")
+    console.print("Shutting down agent...")
     agent.stop()
-    print("Agent stopped. Exiting now.")
+    console.print("Agent stopped. Exiting now.")
     exit(0)
 
 
 def signal_handler(sig, frame):
-    print("\nReceived exit signal, shutting down...")
+    console.print("\nReceived exit signal, shutting down...")
     PUBSUB.publish("exit_signal", "Signal exit")
 
 
 PUBSUB.subscribe("new_agent_message", on_new_agent_message)
 PUBSUB.subscribe("new_agent_prompt", on_new_agent_message_with_prompt)
+PUBSUB.subscribe("new_agent_perception", on_new_agent_perception)
 PUBSUB.subscribe("exit_signal", handle_exit)
 
 if __name__ == "__main__":
@@ -190,4 +189,4 @@ if __name__ == "__main__":
 
     # Wait for the agent thread to finish before exiting
     agent.thread.join()
-    print("Shutting down...")
+    console.print("Shutting down...")
