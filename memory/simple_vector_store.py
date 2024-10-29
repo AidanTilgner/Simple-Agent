@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Literal, cast
 from memory.vector_store import VectorStore, Record
 import requests
 from rich.console import Console
@@ -27,14 +27,10 @@ def query_simple_vector_store(query: str) -> List[Record]:
         file_path = f"{svs_directory}/{result['title']}.md"
         with open(file_path, "r") as file:
             fm = frontmatter.load(file)
-            importance_value = fm.get("importance", 0)
-            if (
-                isinstance(importance_value, (int, str))
-                and str(importance_value).isdigit()
-            ):
-                importance = int(importance_value)
-            else:
-                importance = 0
+            importance_value = fm.get("importance", "low")
+            importance: Literal["low", "medium", "high", "extreme"] = cast(
+                Literal["low", "medium", "high", "extreme"], str(importance_value)
+            )
             record_type = fm.get("type", "")
             record = Record(
                 id=result["id"],
