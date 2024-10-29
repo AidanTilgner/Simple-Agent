@@ -16,22 +16,24 @@ class VectorStore:
     name: str
     query_store: Callable[[str], List[Record]]
     add_record: Callable[[Record], None]
-    on_init: Callable[[], None]
+    on_startup: Callable[[], None]
 
     def __init__(
         self,
         name: str,
         query_store: Callable[[str], List[Record]],
         add_record: Callable[[Record], None],
-        on_init: Optional[Callable[[], None]] = None,
+        on_startup: Optional[Callable[[], None]] = None,
     ) -> None:
         self.name = name
         self.query_store = query_store
         self.add_record = add_record
-        if on_init:
-            self.on_init = on_init
+        if on_startup:
+            self.on_startup = on_startup
 
-        self.on_init()
+    def startup(self):
+        if self.on_startup:
+            self.on_startup()
 
     def query(self, query: str) -> List[Record]:
         return self.query_store(query)

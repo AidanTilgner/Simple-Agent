@@ -114,6 +114,7 @@ def build_svs_store(name: str):
 
 
 def on_svs_init():
+    print("Initializing svs")
     global svs_url
     global svs_directory
     global svs_name
@@ -141,5 +142,5 @@ SVSVectorStore = VectorStore(
     name="simple_vector_store",
     query_store=query_simple_vector_store,
     add_record=add_simple_vector_store_record,
-    on_init=on_svs_init,
+    on_startup=on_svs_init,
 )

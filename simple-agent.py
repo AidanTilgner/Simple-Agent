@@ -5,6 +5,7 @@ import os
 import signal
 import threading
 import time
+from typing import Optional
 
 from dotenv import load_dotenv
 from rich.console import Console
@@ -14,6 +15,7 @@ from agent.agent import Agent
 from llms.openai import OpenAILLM
 from llms.anthropic import AnthropicLLM
 from memory.simple_vector_store import SVSVectorStore
+from memory.vector_store import VectorStore
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
 
@@ -30,6 +32,7 @@ silence_actions = False
 log_directory = os.environ.get("LOG_DIRECTORY", "simple-agent-logs")
 os.makedirs(log_directory, exist_ok=True)  # Ensure the log directory exists
 
+
 SYSTEM_PROMPT = open("system_prompt.md").read()
 
 if not SYSTEM_PROMPT:
@@ -42,10 +45,16 @@ LLM_CHOICE_MAP = {
     "openai": OpenAILLM,
     "anthropic": AnthropicLLM,
 }
-LLM = LLM_CHOICE_MAP[llm_choice]
+LLM = LLM_CHOICE_MAP.get(llm_choice, OpenAILLM)
 
-VECTOR_STORE_CHOICE_MAP = {"simple_vector_store": SVSVectorStore, "none": None}
-VECTOR_STORE = VECTOR_STORE_CHOICE_MAP.get(vector_store_choice, None)
+VECTOR_STORE_CHOICE_MAP: dict[str, Optional[VectorStore]] = {
+    "simple_vector_store": SVSVectorStore,
+    "none": None,
+}
+VECTOR_STORE: Optional[VectorStore] = VECTOR_STORE_CHOICE_MAP.get(
+    vector_store_choice, None
+)
+
 
 PUBSUB = PubSub()
 TOOLBOX = Toolbox(PUBSUB)
@@ -116,8 +125,12 @@ def on_new_agent_message_with_prompt(message: str):
     write_to_file(os.path.join(log_directory, "last_thread.md"), f"Agent: {message}")
     prompt_user()
 
+
 def on_new_agent_perception(perception: str):
-    write_to_file(os.path.join(log_directory, "last_thread.md"), f"Perception:\n{perception}\n")
+    write_to_file(
+        os.path.join(log_directory, "last_thread.md"), f"Perception:\n{perception}\n"
+    )
+
 
 def handle_exit(m: str):
     console.print("Shutting down agent...")
@@ -137,7 +150,13 @@ PUBSUB.subscribe("new_agent_perception", on_new_agent_perception)
 PUBSUB.subscribe("exit_signal", handle_exit)
 
 if __name__ == "__main__":
+    if not LLM:
+        console.print("[red]Error:[/red] Invalid LLM choice.")
+        exit(1)
     LLM.startup(SYSTEM_PROMPT)
+
+    if VECTOR_STORE is not None:
+        VECTOR_STORE.startup()
 
     parser = argparse.ArgumentParser(description="Run the Simmy chatbot.")
     parser.add_argument("--llm", type=str, default="openai", help="The LLM to use.")
