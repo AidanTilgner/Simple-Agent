@@ -13,8 +13,9 @@ svs_name = ""
 
 
 def query_simple_vector_store(query: str) -> List[Record]:
-    response = requests.get(
-        f"{svs_url}/stores/{svs_name}/search", params={"query": query}
+    response = requests.post(
+        f"{svs_url}/stores/{svs_name}/search",
+        json={"query": query},
     )
     if not response.ok:
         raise ValueError("Error querying store")
@@ -110,7 +111,6 @@ def build_svs_store(name: str):
 
 
 def on_svs_init():
-    print("Initializing svs")
     global svs_url
     global svs_directory
     global svs_name
