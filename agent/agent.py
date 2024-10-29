@@ -1,14 +1,15 @@
 import json
 import threading
 import time
-from typing import List
+from typing import List, Optional
 
 from rich.console import Console
 
 from agent.agency import Agency
 from agent.environment import Environment
-from agent.memory import Memory
+from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
+from memory.vector_store import VectorStore
 from tools.toolbox import Toolbox
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
@@ -22,7 +23,8 @@ class Agent:
     llm: LLM
     toolbox: Toolbox
     environment: Environment
-    memory: Memory
+    memory: MemoryEngine
+    vector_store: Optional[VectorStore]
     agency: Agency
     running: bool = False
     awake: bool = False
@@ -36,6 +38,7 @@ class Agent:
         pubsub: PubSub,
         llm: LLM,
         toolbox: Toolbox,
+        vector_store: Optional[VectorStore],
         verbose: bool,
         silence_actions: bool,
     ) -> None:
@@ -44,13 +47,19 @@ class Agent:
         self.toolbox = toolbox
         self.verbose = verbose
         self.silence_actions = silence_actions
-        self.environment = Environment(pubsub)
-        self.memory = Memory(pubsub)
-        self.agency = Agency(pubsub, llm=llm, silence_actions=silence_actions)
+        self.environment = Environment(pubsub=pubsub)
+        self.memory = MemoryEngine(pubsub=pubsub, vector_store=vector_store, llm=llm)
+        self.vector_store = vector_store
+        self.agency = Agency(pubsub=pubsub, llm=llm, silence_actions=silence_actions)
         self.thread = threading.Thread(target=self.run)
 
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
+        self.toolbox.register_tool(self.agency.modify_task_notes_tool())
+        self.toolbox.register_tool(self.agency.modify_task_requirements_tool())
+
+        if self.memory.is_setup():
+            self.toolbox.register_tool(self.memory.add_memory_tool())
 
     def start(self):
         self.running = True
@@ -71,6 +80,7 @@ class Agent:
 
     def run(self):
         if self.running:
+            self.memory.sync_messages(self.messages)
             if self.check_waking_state():
                 self.log_messages()
                 self.iteration += 1
@@ -101,11 +111,15 @@ class Agent:
         """
         This is where the agent will reason about the environment.
         """
+        self.memory.evaluate_memory(self.environment.peek_environment())
+
+        prompt = self.build_prompt()
+
         self.messages.append(
             Message(
                 id=None,
                 role="user",
-                content=self.build_prompt(),
+                content=prompt,
                 tool_calls=None,
             )
         )
@@ -170,9 +184,7 @@ class Agent:
         """
         This is where the memory of the agent will be queried.
         """
-        if len(self.messages) == 0 or self.messages[-1].content is None:
-            return "Memory is empty."
-        return self.memory.search_memory(self.messages[-1].content)
+        return self.memory.get_memory()
 
     def get_agency(self):
         """
@@ -186,11 +198,18 @@ class Agent:
         memory = self.remember()
         agency = self.get_agency()
 
-        prompt = f"""
-        Environment: {perception}\n
-        Memory: {memory}\n
-        Task List: {agency}\n
-        """
+        prompt = ""
+
+        if perception:
+            prompt += f"# Environment:\n{perception}\n"
+
+        if memory:
+            prompt += f"# Memory:\n{memory}\n"
+
+        if agency:
+            prompt += f"# Agency:\n{agency}\n"
+
+        self.pubsub.publish("new_agent_perception", prompt)
 
         return prompt
 

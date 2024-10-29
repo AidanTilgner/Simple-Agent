@@ -83,18 +83,23 @@ You might want to extend or enhance the functionality of the tool, and if you do
 **Modifying Prompts**
 You can modify prompts in the `agent.py`, `agency.py`, `memory.py`, and `environment.py` files. These files are where you'll find the actual programmatic generation logic for several aspects of the prompt. Things might change over time, so I'm not going to go into specifics here. But you might find that you can gain further behavior by modifying these files.
 
+The `system_prompt.md` file is the source of the agent's system prompt, which can be modified as well.
+
 **Using Different Models**
 You might find that using different models is more useful. In the future, there will be additional configuration options that will allow you to use models of your choice. For now, you can take a look at the `openai.py` and `llm.py` files for reference. Essentially, the agent can use any model through the `LLM` interface, so you can implement custom models that way. The main logic for instantiating these are in the `main.py` file, where the default is OpenAI's GPT-4o.
 
 **Adding Tools**
 The `tools/` directory is where you'll find tools. Each tool must fit the `Tool` class, in order to be used by the agent. Check out `toolbox.py` to see a current list of included tools, and how they are used. If you want to add a tool, you can use the `write_file.py`, `read_file.py`, and `send_message_to_user.py` tools as a reference. More tools will be included in the future. This is another area where PRs are welcome.
 
+## Adding Memory
+Check out [the tutorial](/tutorials/adding-memory.md) to learn how to add memory to Simple Agent.
+
 ## Future plans
 
 These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
 
-- [ ] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
-- [ ] Add more tools
-- [ ] Allow selection of additional models
-- [ ] Get better editing
-- [ ] A more robust benchmarking system
+- [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
+- [x] Allow selection of additional models
+- [x] Get better editing
+- [ ] "Modes" that the agent can switch into for specialized operations, with different tool layouts
+- [ ] A more robust benchmarking system through [Benchy](https://github.com/AidanTilgner/Benchy)

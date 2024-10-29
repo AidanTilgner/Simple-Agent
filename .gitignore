@@ -1,12 +1,13 @@
-venv/
+.zed
 .env
+.ruff_cache/
+venv/
 __pycache__/
 agent.thread
 agent.log
 toolbox.log
 logs/
-.zed
 pyrightconfig.json
 playground/*
-.ruff_cache/
 _private/
+datastore/

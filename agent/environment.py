@@ -39,11 +39,20 @@ class Environment:
             return ""
 
         return f"""
-        Unseen Messages:
+        New Messages:
         {"".join(["- {}".format(message) for message in unseen_messages])}
 
         New Tool Messages:
         {"".join(["- {}".format(message) for message in new_tool_messages])}
+        """
+
+    def peek_environment(self):
+        return f"""
+        Unseen Messages:
+        {"".join(["- {}".format(message) for message in self.unseen_messages])}
+
+        New Tool Messages:
+        {"".join(["- {}".format(message) for message in self.new_tool_messages])}
         """
 
     def new_stimuli(self):

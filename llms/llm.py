@@ -1,5 +1,6 @@
 from dataclasses import asdict, dataclass
 from typing import Callable, List, Optional
+import time
 
 from tools.index import Tool, ToolCall
 
@@ -42,6 +43,19 @@ class LLM:
 
     def get_response(self, messages: List[Message], tools: List[Tool]) -> Message:
         return self.get_model_response(messages, tools, self.system_prompt)
+        # time.sleep(1)
+        # return Message(
+        #     id=str(time.time()),
+        #     content=None,
+        #     role="assistant",
+        #     tool_calls=[
+        #         ToolCall(
+        #             id=str(time.time()),
+        #             name="prompt_user",
+        #             arguments={"content": "This is a test from the model"},
+        #         )
+        #     ],
+        # )
 
     def get_text_response(self, message: str, system_prompt: str) -> str:
         response = self.get_model_response(
