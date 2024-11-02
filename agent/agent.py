@@ -10,11 +10,11 @@ from agent.environment import Environment
 from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
 from memory.vector_store import VectorStore
-from roles.roles import ROLES
-from tools.index import Toolbox, Workbench
+from tools.index import Toolbox
+from tools.core.send_message_to_user import send_message_to_user, prompt_user
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
-from roles.index import IdentityManager
+from roles.identity import IdentityManager
 
 console = Console()
 
@@ -57,13 +57,22 @@ class Agent:
         self.thread = threading.Thread(target=self.run)
         self.identity = IdentityManager(pubsub=pubsub, toolbox=self.toolbox)
 
+        self.initialize_default_tools()
+
+    def initialize_default_tools(self):
+        self.toolbox.register_tool(send_message_to_user)
+        self.toolbox.register_tool(prompt_user)
+
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
         self.toolbox.register_tool(self.agency.modify_task_notes_tool())
         self.toolbox.register_tool(self.agency.modify_task_requirements_tool())
+        self.toolbox.register_tool(self.identity.set_role_tool())
 
         if self.memory.is_setup():
             self.toolbox.register_tool(self.memory.add_memory_tool())
+
+        self.identity.add_roles_to_system_prompt(llm=self.llm)
 
     def start(self):
         self.running = True
