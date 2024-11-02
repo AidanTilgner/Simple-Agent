@@ -4,6 +4,7 @@ import time
 from typing import List, Optional
 
 from rich.console import Console
+from rich.markdown import Markdown
 
 from agent.agency import Agency
 from agent.environment import Environment

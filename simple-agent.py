@@ -70,6 +70,8 @@ log_lock = threading.Lock()  # For thread-safe log file operations
 def clear_logs():
     with open(os.path.join(log_directory, "agent.log"), "w") as f:
         f.write("")
+    with open(os.path.join(log_directory, "toolbox.log"), "w") as f:
+        f.write("")
 
 
 def clear_threads():
@@ -180,8 +182,7 @@ if __name__ == "__main__":
     verbose = args.verbose
     silence_actions = args.silence_actions
 
-    if args.clear_logs:
-        clear_logs()
+    clear_logs()
 
     clear_threads()
 

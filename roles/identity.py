@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from llms.llm import LLM
 from roles.index import Role
 from utils.pubsub import PubSub
@@ -10,20 +10,20 @@ from rich.console import Console
 
 console = Console()
 
+ROLES_INCLUDED = [GENERAL_ASSISTANT, DEVELOPER, RESEARCHER]
 
 class IdentityManager:
-    current_role: Role = GENERAL_ASSISTANT
-    available_roles: Dict[str, Role] = {
-        "General Assistant": GENERAL_ASSISTANT,
-        "Developer": DEVELOPER,
-        "Researcher": RESEARCHER,
-    }
+    current_role: Optional[Role] = None
+    available_roles: Dict[str, Role] = {}
     pubsub: PubSub
     toolbox: Toolbox
 
     def __init__(self, pubsub: PubSub, toolbox: Toolbox) -> None:
         self.pubsub = pubsub
         self.toolbox = toolbox
+
+        self.register_roles(ROLES_INCLUDED)
+        self.set_role(GENERAL_ASSISTANT.name)
 
     def register_role(self, role: Role) -> None:
         self.available_roles[role.name] = role
@@ -48,31 +48,17 @@ class IdentityManager:
     def get_roles_described(self) -> str:
         description = ""
         for role in self.available_roles.values():
-            tool_description = ""
-            for tool in role.get_tools_listed():
-                tool_description += f"**{tool.name}**: {tool.description}\n"
-            description += f"""## {role.name}
-            **Identity**:
-            {role.identity}
-
-            **Tools**:
-            {tool_description}
-            """
+            description += f"## {role.name}\n**Identity**:{role.identity}\n\n"
         return description
 
-    def register_role_tools(self, role: Role) -> None:
-        self.toolbox.register_tools(role.get_tools_listed())
-
-    def unregister_role_tools(self, role: Role) -> None:
-        self.toolbox.unregister_tools(role.get_tools_listed())
-
     def set_role(self, role_name: str) -> None:
-        console.print(f"Setting role to {role_name}...", style="bold green")
-        self.unregister_role_tools(self.current_role)
+        console.rule(f"As a {role_name}", style="medium_orchid3")
+        if self.current_role is not None:
+            self.toolbox.unregister_tools(self.current_role.get_tools_listed())
         gotten_role = self.available_roles.get(role_name)
         if gotten_role:
             self.current_role = gotten_role
-            self.register_role_tools(self.current_role)
+            self.toolbox.register_tools(self.current_role.get_tools_listed())
         else:
             raise Exception(f"Role {role_name} not found.")
 

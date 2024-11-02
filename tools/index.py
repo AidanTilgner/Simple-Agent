@@ -53,15 +53,30 @@ class Toolbox:
         return message
 
     def register_tool(self, tool: Tool):
-        self.tools[tool.name] = tool
+        try:
+            self.tools[tool.name] = tool
+        except Exception as e:
+            raise Exception(f"Error registering tool: {e}")
 
     def unregister_tool(self, tool: Tool):
-        del self.tools[tool.name]
+        if tool.name in self.tools:
+            try:
+                del self.tools[tool.name]
+            except KeyError:
+                raise Exception(f"Error unregistering tool: Tool '{tool.name}' not found.")
+        else:
+            raise Exception(f"Error unregistering tool: Tool '{tool.name}' not found.")
 
     def register_tools(self, tools: List[Tool]):
-        for tool in tools:
-            self.register_tool(tool)
+        try:
+            for tool in tools:
+                self.register_tool(tool)
+        except Exception as e:
+            raise Exception(f"Error registering tools: {e}")
 
     def unregister_tools(self, tools: List[Tool]):
-        for tool in tools:
-            self.unregister_tool(tool)
+        try:
+            for tool in tools:
+                self.unregister_tool(tool)
+        except Exception as e:
+            raise Exception(f"Error unregistering tools: {e}")

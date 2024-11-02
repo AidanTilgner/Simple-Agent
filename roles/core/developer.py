@@ -1,8 +1,8 @@
 from roles.index import Role
-from tools.core.index import web_request, write_file, run_js, edit_file
+from tools.core.index import web_request, write_file, run_js, edit_file, exec_command
 from tools.index import Tool
 
-TOOLS = [web_request, write_file, run_js, edit_file]
+TOOLS = [web_request, write_file, run_js, edit_file, exec_command]
 
 DEVELOPER = Role(
     name="Developer",
