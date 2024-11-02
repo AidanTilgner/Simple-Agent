@@ -10,9 +10,11 @@ from agent.environment import Environment
 from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
 from memory.vector_store import VectorStore
-from tools.toolbox import Toolbox
+from roles.roles import ROLES
+from tools.index import Toolbox, Workbench
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
+from roles.index import IdentityManager
 
 console = Console()
 
@@ -20,10 +22,11 @@ console = Console()
 class Agent:
     pubsub: PubSub
     messages: List[Message] = []
-    llm: LLM
     toolbox: Toolbox
+    llm: LLM
     environment: Environment
     memory: MemoryEngine
+    identity: IdentityManager
     vector_store: Optional[VectorStore]
     agency: Agency
     running: bool = False
@@ -37,8 +40,8 @@ class Agent:
         self,
         pubsub: PubSub,
         llm: LLM,
-        toolbox: Toolbox,
         vector_store: Optional[VectorStore],
+        toolbox: Toolbox,
         verbose: bool,
         silence_actions: bool,
     ) -> None:
@@ -49,9 +52,10 @@ class Agent:
         self.silence_actions = silence_actions
         self.environment = Environment(pubsub=pubsub)
         self.memory = MemoryEngine(pubsub=pubsub, vector_store=vector_store, llm=llm)
-        self.vector_store = vector_store
         self.agency = Agency(pubsub=pubsub, llm=llm, silence_actions=silence_actions)
+        self.vector_store = vector_store
         self.thread = threading.Thread(target=self.run)
+        self.identity = IdentityManager(pubsub=pubsub, toolbox=self.toolbox)
 
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
@@ -159,7 +163,7 @@ class Agent:
                 )
 
             returned_message = self.toolbox.run_tool(
-                tool_call.name, tool_call.arguments
+                tool_name=tool_call.name, arguments=tool_call.arguments
             )
             self.pubsub.publish("new_tool_message", returned_message)
             self.messages.append(
