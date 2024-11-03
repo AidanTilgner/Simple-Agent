@@ -91,8 +91,16 @@ You might find that using different models is more useful. In the future, there 
 **Adding Tools**
 The `tools/` directory is where you'll find tools. Each tool must fit the `Tool` class, in order to be used by the agent. Check out `toolbox.py` to see a current list of included tools, and how they are used. If you want to add a tool, you can use the `write_file.py`, `read_file.py`, and `send_message_to_user.py` tools as a reference. More tools will be included in the future. This is another area where PRs are welcome.
 
+## Roles
+Roles are identities which can be adopted by the agent. They are are context-dependent, and each have their own set of tools which are provided to the agent. The agent can switch between roles at any time. `INCLUDED_ROLES` are defined in the `roles/config.py` file. You can learn more about roles in the [roles tutorial](/documentation/adding-a-role.md).
+
+I'm still working on the roles system, so it's not fully implemented yet. But you can see the beginnings of it in the `roles/` directory. Currently these roles are supported:
+- `General Assistant`: A general assistant that can help with a variety of simple tasks.
+- `Developer`: A dedicated developer with specialized tools for software development, testing, and debugging.
+- `Researcher`: A dedicated researcher with specialized tools for web research, data analysis, and documentation.
+
 ## Adding Memory
-Check out [the tutorial](/tutorials/adding-memory.md) to learn how to add memory to Simple Agent.
+Check out [the tutorial](/documentation/adding-memory.md) to learn how to add memory to Simple Agent.
 
 ## Future plans
 
