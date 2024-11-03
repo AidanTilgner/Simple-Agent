@@ -1,5 +1,7 @@
 from roles.index import Role
-from tools.core.index import web_request, write_file, run_js
+from tools.libraries.core.web_request import web_request
+from tools.libraries.core.write_file import write_file
+from tools.libraries.core.run_js import run_js
 
 TOOLS = [web_request, write_file, run_js]
 

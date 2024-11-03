@@ -4,7 +4,7 @@ import requests
 from typing import Any
 
 
-def run(ps: PubSub, args: Any):
+def run(args: Any, ps: PubSub):
     if not args or "url" not in args:
         return "Error running web_request: No URL provided."
 

@@ -5,7 +5,7 @@ from utils.formatting import parse_range
 from utils.pubsub import PubSub
 
 
-def run(pubsub: PubSub, args: Any):
+def run(args: Any, pubsub: PubSub):
     try:
         file_path = args.get("file_path")
         selection = args.get("selection", "1-")

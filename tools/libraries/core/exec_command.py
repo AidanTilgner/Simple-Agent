@@ -6,7 +6,7 @@ from tools.index import Tool
 from utils.pubsub import PubSub
 
 
-def run(ps: PubSub, args: Any):
+def run(args: Any, ps: PubSub):
     if not args or "command" not in args:
         return "Error running exec_command: No command provided."
 

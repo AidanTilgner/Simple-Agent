@@ -4,7 +4,7 @@ from tools.index import Tool
 from utils.pubsub import PubSub
 
 
-def run(ps: PubSub, args: Any):
+def run(args: Any, ps: PubSub):
     if not args:
         return "Error running send_message_to_user: No message provided."
     ps.publish("new_agent_message", args.get("content"))

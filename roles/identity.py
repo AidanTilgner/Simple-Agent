@@ -3,14 +3,10 @@ from llms.llm import LLM
 from roles.index import Role
 from utils.pubsub import PubSub
 from tools.index import Tool, Toolbox
-from roles.core.general import GENERAL_ASSISTANT
-from roles.core.developer import DEVELOPER
-from roles.core.researcher import RESEARCHER
 from rich.console import Console
+from roles.config import ROLES_INCLUDED, DEFAULT_ROLE
 
 console = Console()
-
-ROLES_INCLUDED = [GENERAL_ASSISTANT, DEVELOPER, RESEARCHER]
 
 class IdentityManager:
     current_role: Optional[Role] = None
@@ -23,7 +19,7 @@ class IdentityManager:
         self.toolbox = toolbox
 
         self.register_roles(ROLES_INCLUDED)
-        self.set_role(GENERAL_ASSISTANT.name)
+        self.set_role(DEFAULT_ROLE.name)
 
     def register_role(self, role: Role) -> None:
         self.available_roles[role.name] = role

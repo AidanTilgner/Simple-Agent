@@ -9,7 +9,7 @@ class Tool:
     name: str
     description: str
     function: Callable[
-        [PubSub, Any], (str)
+        [Any, PubSub], (str)
     ]  # Callable that takes any arguments and returns any type
     parameters: Dict[str, Any]  # Dictionary with string keys and values of any type
 
@@ -48,7 +48,7 @@ class Toolbox:
         if not tool:
             self.pubsub.publish("toolbox_error", f"Tool '{tool_name}' not found.")
             return "Tool not found."
-        message = tool.function(self.pubsub, arguments)
+        message = tool.function(arguments, self.pubsub)
         self.tool_log(tool_name, message, arguments)
         return message
 
@@ -63,7 +63,9 @@ class Toolbox:
             try:
                 del self.tools[tool.name]
             except KeyError:
-                raise Exception(f"Error unregistering tool: Tool '{tool.name}' not found.")
+                raise Exception(
+                    f"Error unregistering tool: Tool '{tool.name}' not found."
+                )
         else:
             raise Exception(f"Error unregistering tool: Tool '{tool.name}' not found.")
 
