@@ -14,7 +14,7 @@ TOOLS = [
     write_file,
     run_js,
     web_request,
-    search_project
+    search_project,
 ]
 
 DEVELOPER = Role(

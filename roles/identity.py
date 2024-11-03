@@ -8,6 +8,7 @@ from roles.config import ROLES_INCLUDED, DEFAULT_ROLE
 
 console = Console()
 
+
 class IdentityManager:
     current_role: Optional[Role] = None
     available_roles: Dict[str, Role] = {}
