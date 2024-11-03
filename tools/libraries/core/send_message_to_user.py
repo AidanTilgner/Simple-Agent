@@ -28,7 +28,7 @@ send_message_to_user = Tool(
 )
 
 
-def run_prompt_user(ps: PubSub, args: Any):
+def run_prompt_user(args: Any, ps: PubSub):
     if not args:
         return "Error running prompt_user: No message provided."
     ps.publish("new_agent_prompt", args.get("content"))

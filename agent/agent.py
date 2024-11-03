@@ -12,7 +12,7 @@ from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
 from memory.vector_store import VectorStore
 from tools.index import Toolbox
-from tools.core.send_message_to_user import send_message_to_user, prompt_user
+from tools.libraries.core.send_message_to_user import send_message_to_user, prompt_user
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
 from roles.identity import IdentityManager

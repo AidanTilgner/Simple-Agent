@@ -138,7 +138,7 @@ class Agency:
             return False
 
     def create_task_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             description = args.get("description")
             requirements = args.get("requirements")
             completed = args.get("completed") or False
@@ -182,7 +182,7 @@ class Agency:
         )
 
     def complete_task_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             task_id = args.get("task_id")
             if task_id is None:
                 return f"Task with id {task_id} not found."
@@ -208,7 +208,7 @@ class Agency:
         )
 
     def modify_task_notes_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             task_id = args.get("task_id")
             notes = args.get("notes")
             if task_id is None:
@@ -239,7 +239,7 @@ class Agency:
         )
 
     def modify_task_requirements_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             task_id = args.get("task_id")
             requirements = args.get("requirements")
             if task_id is None:

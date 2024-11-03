@@ -59,7 +59,7 @@ class IdentityManager:
             raise Exception(f"Role {role_name} not found.")
 
     def set_role_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             try:
                 name = args.get("name")
                 if not name:

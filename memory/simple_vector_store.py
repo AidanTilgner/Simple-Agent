@@ -111,27 +111,30 @@ def build_svs_store(name: str):
 
 
 def on_svs_init():
-    global svs_url
-    global svs_directory
-    global svs_name
+    try:
+        global svs_url
+        global svs_directory
+        global svs_name
 
-    svs_url = os.environ.get("SIMPLE_VECTOR_STORE_URL", "")
-    if not svs_url:
-        raise ValueError("SIMPLE_VECTOR_STORE_URL not set")
+        svs_url = os.environ.get("SIMPLE_VECTOR_STORE_URL", "")
+        if not svs_url:
+            raise ValueError("SIMPLE_VECTOR_STORE_URL not set")
 
-    svs_directory = os.environ.get("SIMPLE_VECTOR_STORE_DIRECTORY", "")
-    if not svs_directory:
-        raise ValueError("SIMPLE_VECTOR_STORE_DIRECTORY not set")
+        svs_directory = os.environ.get("SIMPLE_VECTOR_STORE_DIRECTORY", "")
+        if not svs_directory:
+            raise ValueError("SIMPLE_VECTOR_STORE_DIRECTORY not set")
 
-    svs_name = os.environ.get("SIMPLE_VECTOR_STORE_NAME", "")
-    if not svs_name:
-        raise ValueError("SIMPLE_VECTOR_STORE_NAME not set")
+        svs_name = os.environ.get("SIMPLE_VECTOR_STORE_NAME", "")
+        if not svs_name:
+            raise ValueError("SIMPLE_VECTOR_STORE_NAME not set")
 
-    if not test_svs_store_exists(svs_name):
-        create_svs_store(svs_name)
-        build_svs_store(svs_name)
-    else:
-        sync_svs_store(svs_name)
+        if not test_svs_store_exists(svs_name):
+            create_svs_store(svs_name)
+            build_svs_store(svs_name)
+        else:
+            sync_svs_store(svs_name)
+    except Exception as e:
+        raise ValueError("Error initializing simple vector store", e)
 
 
 SVSVectorStore = VectorStore(
