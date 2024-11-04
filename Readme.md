@@ -99,8 +99,8 @@ The `tools/` directory is where you'll find tools. Each tool must fit the `Tool`
 ## Roles
 Roles are identities which can be adopted by the agent. They are are context-dependent, and each have their own set of tools which are provided to the agent. The agent can switch between roles at any time. `INCLUDED_ROLES` are defined in the `roles/config.py` file. You can learn more about roles in the [roles tutorial](/documentation/adding-a-role.md).
 
-I'm still working on the roles system, so it's not fully implemented yet. But you can see the beginnings of it in the `roles/` directory. Currently these roles are supported:
-- `General Assistant`: A general assistant that can help with a variety of simple tasks.
+I'm still working on the roles system, bare with me. But you can see the beginnings of it in the `roles/` directory. Currently these roles are supported:
+- `Helpful Assistant`: A helpful assistant ready to take your questions and provide answers.
 - `Developer`: A dedicated developer with specialized tools for software development, testing, and debugging.
 - `Researcher`: A dedicated researcher with specialized tools for web research, data analysis, and documentation.
 
