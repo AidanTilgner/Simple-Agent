@@ -36,8 +36,6 @@ def run_search_wikipedia(args: Any, pubsub: PubSub) -> str:
         page = loop.run_until_complete(fetch_page(args.get("query")))
         loop.close()  # Close the event loop when done to prevent resource leaks
 
-        print("Page: ", page)
-
         if not page:
             return "No articles found for the given query."
 
