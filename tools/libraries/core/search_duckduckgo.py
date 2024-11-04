@@ -4,11 +4,14 @@ from utils.pubsub import PubSub
 
 from duckduckgo_search import DDGS
 
+
 def run_search_duckduckgo(args: Any, pubsub: PubSub) -> str:
     if not args or "query" not in args:
         return "Error running search_duckduckgo: No query provided."
 
-    results = DDGS().text(args.get("query"))
+    query = args.get("query")
+
+    results = DDGS().text(query)
 
     if not results:
         return "No results found for the given query."

@@ -14,7 +14,7 @@ TOOLS = [
     write_file,
     web_request,
     search_project,
-    python_interpreter
+    python_interpreter,
 ]
 
 DEVELOPER = Role(

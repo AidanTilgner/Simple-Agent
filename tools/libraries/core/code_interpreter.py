@@ -17,7 +17,9 @@ def execute_python_code(args: Any, ps: PubSub):
         exec(code, {}, local_namespace)
 
         # Extract the result from the local namespace
-        result = local_namespace.get("result", "No result variable found in the executed code.")
+        result = local_namespace.get(
+            "result", "No result variable found in the executed code."
+        )
 
         return f"Execution result:\n{result}"
     except Exception as e:

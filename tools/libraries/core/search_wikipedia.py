@@ -6,6 +6,7 @@ import asyncio
 
 client = GoodwikiClient()
 
+
 async def fetch_page(query: str):
     try:
         page = await client.get_page(query, with_styling=True)
@@ -50,7 +51,6 @@ def run_search_wikipedia(args: Any, pubsub: PubSub) -> str:
         return truncated_results
     except Exception as e:
         return f"Error running search_wikipedia: {e}"
-
 
 
 search_wikipedia = Tool(

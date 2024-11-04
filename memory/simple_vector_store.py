@@ -33,7 +33,7 @@ def query_simple_vector_store(query: str) -> List[Record]:
                 Literal["low", "medium", "high", "extreme"], str(importance_value)
             )
             record_type = fm.get("type", "")
-            print('record type: ', record_type)
+            print("record type: ", record_type)
             record = Record(
                 id=result["id"],
                 title=result["title"],
