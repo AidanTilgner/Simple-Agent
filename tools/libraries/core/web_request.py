@@ -19,6 +19,9 @@ def run(args: Any, ps: PubSub):
             method, url, headers=headers, params=params, data=data
         )
         response.raise_for_status()
+        text_response = response.text
+        if len(text_response) > 2000:
+            return f"URL Content [Truncated]:\n```\n{text_response[:2000]}\n```"
         return f"URL Content:\n```\n{response.text}\n```"
     except requests.exceptions.HTTPError as http_err:
         return f"HTTP error occurred: {http_err}"

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 from tools.index import Tool
 from goodwiki import GoodwikiClient
 from utils.pubsub import PubSub
