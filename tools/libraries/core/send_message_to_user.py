@@ -1,8 +1,6 @@
 from typing import Any
-
 from tools.index import Tool
 from utils.pubsub import PubSub
-
 
 def run(args: Any, ps: PubSub):
     if not args:

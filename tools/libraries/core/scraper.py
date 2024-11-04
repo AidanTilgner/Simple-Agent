@@ -7,6 +7,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 import requests
 
+
 def run(args: Any, ps: PubSub):
     if not args or "url" not in args:
         return "Error running web_request: No URL provided."
@@ -50,6 +51,7 @@ run_javascript = Tool(
     },
 )
 
+
 def run_bs(args: Any, ps: PubSub):
     if not args or "url" not in args:
         return "Error running run_beautiful_soup: No URL provided."
@@ -65,7 +67,7 @@ def run_bs(args: Any, ps: PubSub):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, "html.parser")
 
         if not hasattr(soup, method):
             return f"Error: BeautifulSoup object has no method '{method}'"
@@ -76,6 +78,7 @@ def run_bs(args: Any, ps: PubSub):
         return f"BeautifulSoup result:\n```\n{result}\n```"
     except Exception as err:
         return f"Error occurred: {err}"
+
 
 run_beautiful_soup = Tool(
     name="run_beautiful_soup",

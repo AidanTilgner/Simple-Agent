@@ -24,6 +24,11 @@ So put simply, the agent works on a constant loop, involving three main steps:
 
 The perception stage is characterized by a combination of 1. environmental analysis, 2. memory recall, and 3. agency or will towards a goal. The inference stage is the call to the API, where the model (right now only OpenAI models) is given the perception to reason about. The action stage is where the agent takes the output of the model, such as tool calls, and actually runs them.
 
+## Prerequisites
+To make Simple Agent work well, you'll need to meet the following prerequisites:
+- Python 3.11
+- Access to an LLM (Anthropic or OpenAI only by default (for now))
+
 ## How to use it
 
 This repository is a fairly straightforward Python project. **You will need to have Python installed**, and I used Python 3.10 on MacOS, so I know that this version worked. If you use a different version, or use a platform other than MacOS and notice bugs, please let me know in an issue. You should be able to clone the repository, install dependencies (in a virtual environment if you choose), fill in the `.env` file, and run `simple-agent.py` to see it work.
