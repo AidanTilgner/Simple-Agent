@@ -15,8 +15,16 @@ def run_search_wikipedia(args: Any, pubsub: PubSub) -> str:
     if not page:
         return "No articles found for the given query."
 
-    return f"""Articles found for "{args.get("query")}":
+    results = f"""Results for search query: {args.get("query")}
+    {page.title}
+    ---
+    {page.markdown}
+    ---
     """
+
+    truncated_results = results[:5000]
+
+    return truncated_results
 
 
 search_wikipedia = Tool(

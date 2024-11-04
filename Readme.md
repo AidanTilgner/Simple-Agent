@@ -107,12 +107,18 @@ I'm still working on the roles system, so it's not fully implemented yet. But yo
 ## Adding Memory
 Check out [the tutorial](/documentation/adding-memory.md) to learn how to add memory to Simple Agent.
 
-## Future plans
+## Features
 
-These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
-
+**Existing Features**
 - [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
 - [x] Allow selection of additional models
 - [x] Get better editing
+
+**Planned Features**
+These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
 - [ ] "Modes" that the agent can switch into for specialized operations, with different tool layouts
 - [ ] A more robust benchmarking system through [Benchy](https://github.com/AidanTilgner/Benchy)
+
+**Possible Features**
+- [ ] A type of procedural memory
+- [ ] A sort of plugin system

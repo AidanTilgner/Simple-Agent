@@ -1,5 +1,5 @@
 from roles.index import Role
-from tools.libraries.core import read_file
+from tools.libraries.core.read_file import read_file
 from tools.libraries.core.web_request import web_request
 from tools.libraries.core.write_file import write_file
 from tools.libraries.core.scraper import run_javascript, run_beautiful_soup
