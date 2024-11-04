@@ -110,6 +110,9 @@ I'm still working on the roles system, bare with me. But you can see the beginni
 ## Adding Memory
 Check out [the tutorial](/documentation/adding-memory.md) to learn how to add memory to Simple Agent.
 
+## Roadmap
+I'm looking to polish this project into a really solid framework for building agents. But it's going to need to stay as a core, rather than a full-fledged agent. To make a full-fledged agent, this should be forked.
+
 ## Features
 **Existing Features**
 - [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
