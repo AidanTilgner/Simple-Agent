@@ -10,6 +10,7 @@ click==8.1.7
 cryptography==43.0.3
 dill==0.3.9
 distro==1.9.0
+duckduckgo_search==6.3.3
 exceptiongroup==1.2.2
 filelock==3.15.4
 fsspec==2024.6.1
@@ -31,6 +32,7 @@ packaging==24.1
 pdfminer.six==20231228
 pdfplumber==0.11.4
 pillow==11.0.0
+primp==0.7.0
 pyarrow==12.0.1
 pycparser==2.22
 pydantic==2.8.2
