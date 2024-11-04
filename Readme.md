@@ -104,11 +104,13 @@ I'm still working on the roles system, so it's not fully implemented yet. But yo
 - `Developer`: A dedicated developer with specialized tools for software development, testing, and debugging.
 - `Researcher`: A dedicated researcher with specialized tools for web research, data analysis, and documentation.
 
+> [!note]
+> To switch between roles, just ask the agent to do it. For example, you can say "I'd like some help with research...", or more specifically "I'd like to switch to the researcher role." You'll see an "As a [ROLE]" message to confirm.
+
 ## Adding Memory
 Check out [the tutorial](/documentation/adding-memory.md) to learn how to add memory to Simple Agent.
 
 ## Features
-
 **Existing Features**
 - [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
 - [x] Allow selection of additional models
