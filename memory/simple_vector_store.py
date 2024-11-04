@@ -15,7 +15,7 @@ svs_name = ""
 def query_simple_vector_store(query: str) -> List[Record]:
     response = requests.post(
         f"{svs_url}/stores/{svs_name}/search",
-        json={"query": query},
+        json={"query": query, "limit": 3, "threshold": 0.4},
     )
     if not response.ok:
         raise ValueError("Error querying store")
@@ -33,6 +33,7 @@ def query_simple_vector_store(query: str) -> List[Record]:
                 Literal["low", "medium", "high", "extreme"], str(importance_value)
             )
             record_type = fm.get("type", "")
+            print('record type: ', record_type)
             record = Record(
                 id=result["id"],
                 title=result["title"],
