@@ -4,15 +4,18 @@ import time
 from typing import List, Optional
 
 from rich.console import Console
+from rich.markdown import Markdown
 
 from agent.agency import Agency
 from agent.environment import Environment
 from agent.memory import MemoryEngine
 from llms.llm import LLM, Message
 from memory.vector_store import VectorStore
-from tools.toolbox import Toolbox
+from tools.index import Toolbox
+from tools.libraries.core.send_message_to_user import send_message_to_user, prompt_user
 from utils.pubsub import PubSub
 from utils.tokens import get_current_num_tokens, truncate_message
+from roles.identity import IdentityManager
 
 console = Console()
 
@@ -20,10 +23,11 @@ console = Console()
 class Agent:
     pubsub: PubSub
     messages: List[Message] = []
-    llm: LLM
     toolbox: Toolbox
+    llm: LLM
     environment: Environment
     memory: MemoryEngine
+    identity: IdentityManager
     vector_store: Optional[VectorStore]
     agency: Agency
     running: bool = False
@@ -37,8 +41,8 @@ class Agent:
         self,
         pubsub: PubSub,
         llm: LLM,
-        toolbox: Toolbox,
         vector_store: Optional[VectorStore],
+        toolbox: Toolbox,
         verbose: bool,
         silence_actions: bool,
     ) -> None:
@@ -49,17 +53,27 @@ class Agent:
         self.silence_actions = silence_actions
         self.environment = Environment(pubsub=pubsub)
         self.memory = MemoryEngine(pubsub=pubsub, vector_store=vector_store, llm=llm)
-        self.vector_store = vector_store
         self.agency = Agency(pubsub=pubsub, llm=llm, silence_actions=silence_actions)
+        self.vector_store = vector_store
         self.thread = threading.Thread(target=self.run)
+        self.identity = IdentityManager(pubsub=pubsub, toolbox=self.toolbox)
+
+        self.initialize_default_tools()
+
+    def initialize_default_tools(self):
+        self.toolbox.register_tool(send_message_to_user)
+        self.toolbox.register_tool(prompt_user)
 
         self.toolbox.register_tool(self.agency.create_task_tool())
         self.toolbox.register_tool(self.agency.complete_task_tool())
         self.toolbox.register_tool(self.agency.modify_task_notes_tool())
         self.toolbox.register_tool(self.agency.modify_task_requirements_tool())
+        self.toolbox.register_tool(self.identity.set_role_tool())
 
         if self.memory.is_setup():
             self.toolbox.register_tool(self.memory.add_memory_tool())
+
+        self.identity.add_roles_to_system_prompt(llm=self.llm)
 
     def start(self):
         self.running = True
@@ -159,7 +173,7 @@ class Agent:
                 )
 
             returned_message = self.toolbox.run_tool(
-                tool_call.name, tool_call.arguments
+                tool_name=tool_call.name, arguments=tool_call.arguments
             )
             self.pubsub.publish("new_tool_message", returned_message)
             self.messages.append(

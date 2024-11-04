@@ -1,10 +1,8 @@
 from typing import Any
-
 from tools.index import Tool
 from utils.pubsub import PubSub
 
-
-def run(ps: PubSub, args: Any):
+def run(args: Any, ps: PubSub):
     if not args:
         return "Error running send_message_to_user: No message provided."
     ps.publish("new_agent_message", args.get("content"))
@@ -28,7 +26,7 @@ send_message_to_user = Tool(
 )
 
 
-def run_prompt_user(ps: PubSub, args: Any):
+def run_prompt_user(args: Any, ps: PubSub):
     if not args:
         return "Error running prompt_user: No message provided."
     ps.publish("new_agent_prompt", args.get("content"))

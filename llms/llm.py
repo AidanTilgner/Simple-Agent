@@ -43,6 +43,7 @@ class LLM:
 
     def get_response(self, messages: List[Message], tools: List[Tool]) -> Message:
         return self.get_model_response(messages, tools, self.system_prompt)
+        # sometimes useful for testing:
         # time.sleep(1)
         # return Message(
         #     id=str(time.time()),
@@ -66,3 +67,7 @@ class LLM:
         if not response.content:
             return ""
         return response.content
+
+    def append_to_system_prompt(self, message: str):
+        self.system_prompt += f"\n{message}"
+        return self.system_prompt
