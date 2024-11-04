@@ -49,7 +49,7 @@ class IdentityManager:
         return description
 
     def set_role(self, role_name: str) -> None:
-        console.rule(f"As a {role_name}", style="medium_orchid3")
+        console.rule(f"As a {role_name}", style="blue")
         if self.current_role is not None:
             self.toolbox.unregister_tools(self.current_role.get_tools_listed())
         gotten_role = self.available_roles.get(role_name)

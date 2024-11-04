@@ -4,14 +4,18 @@ import os
 from tools.index import Tool
 from utils.pubsub import PubSub
 
+
 def parse_gitignore(path: str) -> List[str]:
-    gitignore_path = os.path.join(path, '.gitignore')
+    gitignore_path = os.path.join(path, ".gitignore")
     if not os.path.exists(gitignore_path):
         return []
 
-    with open(gitignore_path, 'r', encoding='utf-8', errors='ignore') as f:
-        patterns = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+    with open(gitignore_path, "r", encoding="utf-8", errors="ignore") as f:
+        patterns = [
+            line.strip() for line in f if line.strip() and not line.startswith("#")
+        ]
     return patterns
+
 
 def run(args: Any, ps: PubSub):
     try:
@@ -36,12 +40,16 @@ def run(args: Any, ps: PubSub):
                 file_path = os.path.join(root, file)
 
                 # Apply include and exclude filters
-                if include_filters and not any(re.search(f, file) for f in include_filters):
+                if include_filters and not any(
+                    re.search(f, file) for f in include_filters
+                ):
                     continue
-                if exclude_filters and any(re.search(f, file_path) for f in exclude_filters):
+                if exclude_filters and any(
+                    re.search(f, file_path) for f in exclude_filters
+                ):
                     continue
 
-                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                     content = f.read()
                     if regex:
                         flags = 0 if case_sensitive else re.IGNORECASE
@@ -49,23 +57,28 @@ def run(args: Any, ps: PubSub):
                     else:
                         pattern = re.escape(query)
                         if whole_word:
-                            pattern = r'\b' + pattern + r'\b'
+                            pattern = r"\b" + pattern + r"\b"
                         if not case_sensitive:
                             pattern = re.compile(pattern, re.IGNORECASE)
                         else:
                             pattern = re.compile(pattern)
 
                     for match in pattern.finditer(content):
-                        matches.append({
-                            "file": file_path,
-                            "line": content.count('\n', 0, match.start()) + 1,
-                            "match": match.group()
-                        })
+                        matches.append(
+                            {
+                                "file": file_path,
+                                "line": content.count("\n", 0, match.start()) + 1,
+                                "match": match.group(),
+                            }
+                        )
 
-        matches_str = '\n'.join([f"{m['file']}:{m['line']} - {m['match']}" for m in matches])
+        matches_str = "\n".join(
+            [f"{m['file']}:{m['line']} - {m['match']}" for m in matches]
+        )
         return matches_str
     except Exception as e:
-            return f"Error searching for the query: {e}"
+        return f"Error searching for the query: {e}"
+
 
 search_project = Tool(
     name="search_project",
