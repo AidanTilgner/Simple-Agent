@@ -24,6 +24,11 @@ So put simply, the agent works on a constant loop, involving three main steps:
 
 The perception stage is characterized by a combination of 1. environmental analysis, 2. memory recall, and 3. agency or will towards a goal. The inference stage is the call to the API, where the model (right now only OpenAI models) is given the perception to reason about. The action stage is where the agent takes the output of the model, such as tool calls, and actually runs them.
 
+## Prerequisites
+To make Simple Agent work well, you'll need to meet the following prerequisites:
+- Python 3.11
+- Access to an LLM (Anthropic or OpenAI only by default (for now))
+
 ## How to use it
 
 This repository is a fairly straightforward Python project. **You will need to have Python installed**, and I used Python 3.10 on MacOS, so I know that this version worked. If you use a different version, or use a platform other than MacOS and notice bugs, please let me know in an issue. You should be able to clone the repository, install dependencies (in a virtual environment if you choose), fill in the `.env` file, and run `simple-agent.py` to see it work.
@@ -91,15 +96,29 @@ You might find that using different models is more useful. In the future, there 
 **Adding Tools**
 The `tools/` directory is where you'll find tools. Each tool must fit the `Tool` class, in order to be used by the agent. Check out `toolbox.py` to see a current list of included tools, and how they are used. If you want to add a tool, you can use the `write_file.py`, `read_file.py`, and `send_message_to_user.py` tools as a reference. More tools will be included in the future. This is another area where PRs are welcome.
 
+## Roles
+Roles are identities which can be adopted by the agent. They are are context-dependent, and each have their own set of tools which are provided to the agent. The agent can switch between roles at any time. `INCLUDED_ROLES` are defined in the `roles/config.py` file. You can learn more about roles in the [roles tutorial](/documentation/adding-a-role.md).
+
+I'm still working on the roles system, so it's not fully implemented yet. But you can see the beginnings of it in the `roles/` directory. Currently these roles are supported:
+- `General Assistant`: A general assistant that can help with a variety of simple tasks.
+- `Developer`: A dedicated developer with specialized tools for software development, testing, and debugging.
+- `Researcher`: A dedicated researcher with specialized tools for web research, data analysis, and documentation.
+
 ## Adding Memory
-Check out [the tutorial](/tutorials/adding-memory.md) to learn how to add memory to Simple Agent.
+Check out [the tutorial](/documentation/adding-memory.md) to learn how to add memory to Simple Agent.
 
-## Future plans
+## Features
 
-These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
-
+**Existing Features**
 - [x] Implement memory and learning through [Simple Vector Store](https://github.com/AidanTilgner/Simple-Vector-Store)
 - [x] Allow selection of additional models
 - [x] Get better editing
+
+**Planned Features**
+These are things that I currently plan on doing. If you have ideas for features or feadback, don't hesitate to open an issue so we can discuss it.
 - [ ] "Modes" that the agent can switch into for specialized operations, with different tool layouts
 - [ ] A more robust benchmarking system through [Benchy](https://github.com/AidanTilgner/Benchy)
+
+**Possible Features**
+- [ ] A type of procedural memory
+- [ ] A sort of plugin system

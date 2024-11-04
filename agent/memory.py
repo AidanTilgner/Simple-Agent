@@ -78,7 +78,7 @@ class MemoryEngine:
         return memory
 
     def add_memory_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             content = args.get("content")
             title = args.get("title")
             importance = args.get("importance")
@@ -137,7 +137,7 @@ class MemoryEngine:
         )
 
     def dont_add_memory_tool(self) -> Tool:
-        def run(pubsub: PubSub, args: Any):
+        def run(args: Any, pubsub: PubSub):
             return "No memory added."
 
         return Tool(

@@ -16,7 +16,7 @@ from llms.openai import OpenAILLM
 from llms.anthropic import AnthropicLLM
 from memory.simple_vector_store import SVSVectorStore
 from memory.vector_store import VectorStore
-from tools.toolbox import Toolbox
+from tools.index import Toolbox
 from utils.pubsub import PubSub
 
 load_dotenv()
@@ -62,13 +62,15 @@ VECTOR_STORE: Optional[VectorStore] = VECTOR_STORE_CHOICE_MAP.get(
 
 
 PUBSUB = PubSub()
-TOOLBOX = Toolbox(PUBSUB)
+TOOLBOX = Toolbox(pubsub=PUBSUB)
 
 log_lock = threading.Lock()  # For thread-safe log file operations
 
 
 def clear_logs():
     with open(os.path.join(log_directory, "agent.log"), "w") as f:
+        f.write("")
+    with open(os.path.join(log_directory, "toolbox.log"), "w") as f:
         f.write("")
 
 
@@ -180,8 +182,7 @@ if __name__ == "__main__":
     verbose = args.verbose
     silence_actions = args.silence_actions
 
-    if args.clear_logs:
-        clear_logs()
+    clear_logs()
 
     clear_threads()
 
